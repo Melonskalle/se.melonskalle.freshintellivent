@@ -33,8 +33,18 @@ class SkyDriver extends Homey.Driver {
       .registerRunListener(async ({ device, minutes }) => device.setPause(true, minutes));
     h.getActionCard('pause_stop')
       .registerRunListener(async ({ device }) => device.setPause(false, 0));
+    h.getActionCard('set_constant_rpm')
+      .registerRunListener(async ({ device, rpm }) => device.setConstantSpeed(null, rpm));
     h.getActionCard('set_humidity')
-      .registerRunListener(async ({ device, detection, rpm }) => device.setHumidityMode(detection, rpm));
+      .registerRunListener(async ({ device, level }) => device.setHumidityLevel(level));
+    h.getActionCard('set_light')
+      .registerRunListener(async ({ device, level }) => device.setLightLevel(level));
+    h.getActionCard('set_voc')
+      .registerRunListener(async ({ device, level }) => device.setVocLevel(level));
+    h.getActionCard('set_airing')
+      .registerRunListener(async ({ device, minutes }) => device.setAiring(minutes));
+    h.getActionCard('set_timer')
+      .registerRunListener(async ({ device, minutes, delay }) => device.setTimer(minutes, delay));
   }
 
   async _discover() {

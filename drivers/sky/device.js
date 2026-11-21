@@ -5,6 +5,17 @@ const P = require('../../lib/protocol');
 const FreshConnection = require('../../lib/FreshConnection');
 
 const DEFAULT_POLL = 120;
+const AIRING_STEPS = [30, 60, 90, 120];
+
+const CAPABILITIES = [
+  'fresh_boost', 'fresh_pause', 'fresh_constant_speed', 'fresh_constant_rpm',
+  'fresh_humidity_level', 'fresh_light_level', 'fresh_voc_level', 'fresh_airing',
+  'fresh_mode', 'fresh_rpm', 'measure_temperature', 'measure_humidity', 'fresh_boost_remaining',
+];
+
+function nearestAiring(minutes) {
+  return AIRING_STEPS.reduce((a, b) => (Math.abs(b - minutes) < Math.abs(a - minutes) ? b : a));
+}
 
 class SkyDevice extends Homey.Device {
   async onInit() {
@@ -15,12 +26,20 @@ class SkyDevice extends Homey.Device {
     this._conn = null;
     this._failures = 0;
 
-    for (const cap of ['fresh_boost_remaining']) {
+    // Add capabilities introduced after a device was paired.
+    for (const cap of CAPABILITIES) {
       if (!this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
     }
 
-    this.registerCapabilityListener('fresh_boost', async (value) => this.setBoost(value));
-    this.registerCapabilityListener('fresh_constant_speed', async (value) => this.setConstantSpeed(value));
+    const ui = (cap, fn) => this.registerCapabilityListener(cap, (value) => this._fromUi(cap, value, fn));
+    ui('fresh_boost', (v) => this.setBoost(v));
+    ui('fresh_pause', (v) => this.setPause(v));
+    ui('fresh_constant_speed', (v) => this.setConstantSpeed(v));
+    ui('fresh_constant_rpm', (v) => this.setConstantSpeed(null, v));
+    ui('fresh_humidity_level', (v) => this.setHumidityLevel(v));
+    ui('fresh_light_level', (v) => this.setLightLevel(v));
+    ui('fresh_voc_level', (v) => this.setVocLevel(v));
+    ui('fresh_airing', (v) => this.setAiring(v));
 
     this.refreshSoon(2000);
   }
@@ -34,6 +53,24 @@ class SkyDevice extends Homey.Device {
   async onUninit() {
     this.homey.clearTimeout(this._pollTimer);
     await this._dropConn();
+  }
+
+  /**
+   * A (re)connect can take 15-20 s, longer than the Homey app waits for a
+   * capability change. So accept the change at once, do the BLE work in the
+   * background, and roll the value back if it fails.
+   */
+  async _fromUi(cap, value, fn) {
+    if (!this.getSetting('auth_key')) throw new Error(this.homey.__('errors.no_auth'));
+    const previous = this.getCapabilityValue(cap);
+    Promise.resolve()
+      .then(() => fn(value))
+      .catch(async (err) => {
+        this.error(`${cap} -> ${value} failed:`, err.message);
+        await this.setCapabilityValue(cap, previous).catch(() => {});
+        await this.setWarning(this.homey.__('errors.command_failed', { error: err.message })).catch(() => {});
+        this.homey.setTimeout(() => this.unsetWarning().catch(() => {}), 60000);
+      });
   }
 
   /* ---------------- scheduling ---------------- */
@@ -53,7 +90,6 @@ class SkyDevice extends Homey.Device {
 
   _scheduleNext() {
     let seconds = this._pollSeconds();
-    // Poll right after a running boost ends so the UI flips back promptly.
     if (this._state && this._state.boost.enabled && this._state.boost.seconds > 0) {
       seconds = Math.min(seconds, this._state.boost.seconds + 5);
     }
@@ -62,19 +98,21 @@ class SkyDevice extends Homey.Device {
 
   /** Serialises all BLE work for this fan. */
   runExclusive(fn) {
-    const run = this._queue.then(fn, fn);
+    const run = this._queue.then(() => fn(), () => fn());
     this._queue = run.catch(() => {});
     return run;
   }
 
-  /**
-   * Reuses one open connection: getting connected and resolved takes the fan
-   * ~15-20 s, so doing it on every poll would be slow and flaky. The fan may
-   * still drop the link when idle; then the next session reconnects.
-   */
+  /* ---------------- connection ---------------- */
+
   async _getConn() {
-    if (this._conn && this._conn.isOpen) return this._conn;
-    if (this._conn) await this._conn.close();
+    const c = this._conn;
+    if (c && c.isOpen) {
+      // The fan silently drops idle links; check before trusting an old one.
+      if (Date.now() - c.lastActivity < 3000 || await c.probe()) return c;
+      this.log('Stale connection, reconnecting');
+    }
+    await this._dropConn();
     const conn = new FreshConnection(
       this.homey,
       this.getStoreValue('peripheralUuid') || this.getData().id,
@@ -91,39 +129,48 @@ class SkyDevice extends Homey.Device {
     if (c) await c.close();
   }
 
-  /** Connect (or reuse), authenticate, run fn(conn), re-read state. */
+  /**
+   * Connect (or reuse), authenticate, run fn(conn), re-read state.
+   * Retries once on a fresh connection if the first try fails.
+   */
   _session(fn, { requireAuth = false, authKey, readBack = true } = {}) {
     return this.runExclusive(async () => {
       const key = authKey !== undefined ? authKey : this.getSetting('auth_key');
-      if (requireAuth && !key) {
-        throw new Error(this.homey.__('errors.no_auth'));
-      }
+      if (requireAuth && !key) throw new Error(this.homey.__('errors.no_auth'));
+      let lastErr;
       try {
-        const conn = await this._getConn();
-        // The fan forgets authentication after a few seconds idle; re-send each time.
-        if (key) await conn.authenticate(key);
-        if (fn) await fn(conn);
-        if (!readBack) return null;
-        if (!this.getStoreValue('info')) {
-          const info = await conn.readDeviceInfo();
-          await this.setStoreValue('info', info).catch(this.error);
-          await this.setSettings({
-            info_manufacturer: info.manufacturer || '-',
-            info_firmware: info.firmware || '-',
-          }).catch(this.error);
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          try {
+            const conn = await this._getConn();
+            // The fan forgets authentication after a few seconds idle; re-send each time.
+            if (key) await conn.authenticate(key);
+            let state = null;
+            if (fn) await fn(conn, this._state);
+            if (readBack) {
+              if (!this.getStoreValue('info')) {
+                const info = await conn.readDeviceInfo();
+                await this.setStoreValue('info', info).catch(this.error);
+                await this.setSettings({
+                  info_manufacturer: info.manufacturer || '-',
+                  info_firmware: info.firmware || '-',
+                }).catch(this.error);
+              }
+              state = await conn.readAll();
+              await this._applyState(state, key);
+            }
+            this._failures = 0;
+            await this.setAvailable().catch(this.error);
+            return state;
+          } catch (err) {
+            lastErr = err;
+            this.error(`BLE session attempt ${attempt} failed:`, err.message);
+            await this._dropConn();
+          }
         }
-        const state = await conn.readAll();
-        await this._applyState(state, key);
-        this._failures = 0;
-        await this.setAvailable().catch(this.error);
-        return state;
-      } catch (err) {
-        this.error('BLE session failed:', err.message);
-        await this._dropConn();
-        this._failures = (this._failures || 0) + 1;
-        // One failed poll is normal for this fan; only flag it after repeated failures.
-        if (this._failures >= 3) await this.setUnavailable(err.message).catch(this.error);
-        throw err;
+        this._failures += 1;
+        // A single failed poll is normal for this fan; flag only repeated failures.
+        if (this._failures >= 3) await this.setUnavailable(lastErr.message).catch(this.error);
+        throw lastErr;
       } finally {
         this._scheduleNext();
       }
@@ -134,19 +181,31 @@ class SkyDevice extends Homey.Device {
     return this._session(null);
   }
 
+  /** Write, then re-read the fan's state in the same session. */
+  _command(fn) {
+    return this._session(fn, { requireAuth: true });
+  }
+
   /* ---------------- state -> Homey ---------------- */
 
   async _applyState(state, key) {
     const prev = this._state;
     this._state = state;
     const s = state.status;
+    const lv = state.lightVoc;
 
     if (s.temperature !== null) await this._set('measure_temperature', s.temperature);
     if (s.humidity !== null) await this._set('measure_humidity', s.humidity);
     await this._set('fresh_rpm', s.rpm);
     await this._set('fresh_mode', s.mode);
     await this._set('fresh_boost', state.boost.enabled);
+    await this._set('fresh_pause', state.pause.enabled || s.mode === 'pause');
     await this._set('fresh_constant_speed', state.constantSpeed.enabled);
+    await this._set('fresh_constant_rpm', state.constantSpeed.rpm);
+    await this._set('fresh_humidity_level', P.rawToLevel('humidity', state.humidity.enabled, state.humidity.detection));
+    await this._set('fresh_light_level', P.rawToLevel('light', lv.lightEnabled, lv.lightDetection));
+    await this._set('fresh_voc_level', P.rawToLevel('voc', lv.vocEnabled, lv.vocDetection));
+    await this._set('fresh_airing', state.airing.enabled ? String(nearestAiring(state.airing.minutes)) : 'off');
     await this._set('fresh_boost_remaining',
       state.boost.enabled ? Math.round((state.boost.seconds / 60) * 10) / 10 : 0);
 
@@ -158,32 +217,17 @@ class SkyDevice extends Homey.Device {
       await this.unsetWarning().catch(this.error);
     }
 
-    // Flow triggers
     if (prev) {
       const driver = this.driver;
       if (prev.status.mode !== s.mode) {
         driver.modeChangedTrigger.trigger(this, { mode: this._modeTitle(s.mode) }).catch(this.error);
       }
-      if (!prev.boost.enabled && state.boost.enabled) {
-        driver.boostStartedTrigger.trigger(this).catch(this.error);
-      }
-      if (prev.boost.enabled && !state.boost.enabled) {
-        driver.boostStoppedTrigger.trigger(this).catch(this.error);
-      }
+      if (!prev.boost.enabled && state.boost.enabled) driver.boostStartedTrigger.trigger(this).catch(this.error);
+      if (prev.boost.enabled && !state.boost.enabled) driver.boostStoppedTrigger.trigger(this).catch(this.error);
     }
 
-    // Mirror the fan's configuration into the device settings.
     const settings = {
-      constant_speed_rpm: state.constantSpeed.rpm,
-      humidity_enabled: state.humidity.enabled,
-      humidity_detection: String(state.humidity.detection),
       humidity_rpm: state.humidity.rpm,
-      light_enabled: state.lightVoc.lightEnabled,
-      light_detection: String(state.lightVoc.lightDetection === 3 ? 3 : 2),
-      voc_enabled: state.lightVoc.vocEnabled,
-      voc_detection: String(state.lightVoc.vocDetection),
-      airing_enabled: state.airing.enabled,
-      airing_minutes: state.airing.minutes,
       airing_rpm: state.airing.rpm,
       timer_minutes: state.timer.minutes,
       timer_delay_enabled: state.timer.delayEnabled,
@@ -206,19 +250,14 @@ class SkyDevice extends Homey.Device {
 
   async _syncSettings(fromFan) {
     const ranges = {
-      constant_speed_rpm: [800, 2400], humidity_rpm: [800, 2400], airing_rpm: [800, 2400],
-      timer_rpm: [800, 2400], boost_rpm: [800, 2400], boost_seconds: [60, 3600],
-      airing_minutes: [5, 120], timer_minutes: [1, 60], timer_delay_minutes: [0, 10],
-    };
-    const dropdown = {
-      humidity_detection: ['1', '2', '3'], light_detection: ['2', '3'], voc_detection: ['1', '2', '3'],
+      humidity_rpm: [800, 2400], airing_rpm: [800, 2400], timer_rpm: [800, 2400],
+      boost_rpm: [800, 2400], boost_seconds: [60, 3600], timer_minutes: [1, 60], timer_delay_minutes: [0, 10],
     };
     const current = this.getSettings();
     const changed = {};
     for (const key of Object.keys(fromFan)) {
       const v = fromFan[key];
       if (ranges[key] && (v < ranges[key][0] || v > ranges[key][1])) continue;
-      if (dropdown[key] && !dropdown[key].includes(v)) continue;
       if (current[key] !== v) changed[key] = v;
     }
     if (Object.keys(changed).length) {
@@ -232,15 +271,10 @@ class SkyDevice extends Homey.Device {
 
   /* ---------------- commands ---------------- */
 
-  _cur() {
-    if (!this._state) throw new Error(this.homey.__('errors.no_state'));
-    return this._state;
-  }
-
   async setBoost(enabled, rpm, seconds) {
     const r = rpm || Number(this.getSetting('boost_rpm')) || 2400;
     const s = seconds || Number(this.getSetting('boost_seconds')) || 600;
-    await this._session((conn) => conn.write(P.CHAR.BOOST, P.buildBoost(!!enabled, r, s)), { requireAuth: true });
+    await this._command((conn) => conn.write(P.CHAR.BOOST, P.buildBoost(!!enabled, r, s)));
   }
 
   async startBoost(rpm, minutes) {
@@ -248,81 +282,106 @@ class SkyDevice extends Homey.Device {
     return this.setBoost(true, rpm, seconds);
   }
 
-  async setConstantSpeed(enabled, rpm) {
-    await this._session(async (conn) => {
-      let r = rpm;
-      if (!r) {
-        const cur = P.parseConstantSpeed(await conn.read(P.CHAR.CONSTANT_SPEED));
-        r = Number(this.getSetting('constant_speed_rpm')) || cur.rpm;
-      }
-      await conn.write(P.CHAR.CONSTANT_SPEED, P.buildConstantSpeed(!!enabled, r));
-    }, { requireAuth: true });
-  }
-
   async setPause(enabled, minutes) {
-    await this._session(
-      (conn) => conn.write(P.CHAR.PAUSE, P.buildPause(!!enabled, minutes || 0)),
-      { requireAuth: true },
-    );
+    const m = minutes || Number(this.getSetting('pause_minutes')) || 30;
+    await this._command((conn) => conn.write(P.CHAR.PAUSE, P.buildPause(!!enabled, enabled ? m : 0)));
   }
 
-  /** detection: 'off' | '1' | '2' | '3' */
-  async setHumidityMode(detection, rpm) {
-    await this._session(async (conn) => {
+  /** enabled: true/false, or null to keep; rpm: number, or null to keep. */
+  async setConstantSpeed(enabled, rpm) {
+    await this._command(async (conn) => {
+      const cur = P.parseConstantSpeed(await conn.read(P.CHAR.CONSTANT_SPEED));
+      const en = (enabled === null || enabled === undefined) ? cur.enabled : !!enabled;
+      await conn.write(P.CHAR.CONSTANT_SPEED, P.buildConstantSpeed(en, rpm || cur.rpm));
+    });
+  }
+
+  /** level: 'off' | 'low' | 'medium' | 'high' */
+  async setHumidityLevel(level, rpm) {
+    await this._command(async (conn) => {
       const cur = P.parseHumidity(await conn.read(P.CHAR.HUMIDITY));
-      const enabled = detection !== 'off';
-      const det = enabled ? Number(detection) : cur.detection;
-      await conn.write(P.CHAR.HUMIDITY, P.buildHumidity(enabled, det || 2, rpm || cur.rpm));
-    }, { requireAuth: true });
+      const on = level !== 'off';
+      const det = on ? P.levelToRaw('humidity', level) : cur.detection;
+      await conn.write(P.CHAR.HUMIDITY, P.buildHumidity(on, det || 2, rpm || cur.rpm));
+    });
+  }
+
+  async _setLightVoc(changes) {
+    await this._command(async (conn) => {
+      const cur = P.parseLightVoc(await conn.read(P.CHAR.LIGHT_VOC));
+      const n = Object.assign({}, cur, changes);
+      await conn.write(P.CHAR.LIGHT_VOC, P.buildLightVoc(
+        n.lightEnabled, n.lightDetection || 2, n.vocEnabled, n.vocDetection || 2,
+      ));
+    });
+  }
+
+  async setLightLevel(level) {
+    if (level === 'off') return this._setLightVoc({ lightEnabled: false });
+    return this._setLightVoc({ lightEnabled: true, lightDetection: P.levelToRaw('light', level) });
+  }
+
+  async setVocLevel(level) {
+    if (level === 'off') return this._setLightVoc({ vocEnabled: false });
+    return this._setLightVoc({ vocEnabled: true, vocDetection: P.levelToRaw('voc', level) });
+  }
+
+  /** value: 'off' or minutes as string/number */
+  async setAiring(value, rpm) {
+    await this._command(async (conn) => {
+      const cur = P.parseAiring(await conn.read(P.CHAR.AIRING));
+      const on = String(value) !== 'off';
+      const minutes = on ? Number(value) : cur.minutes;
+      await conn.write(P.CHAR.AIRING, P.buildAiring(on, minutes || 30, rpm || cur.rpm));
+    });
+  }
+
+  async setTimer(minutes, delayMinutes, rpm) {
+    await this._command(async (conn) => {
+      const cur = P.parseTimer(await conn.read(P.CHAR.TIMER));
+      const delay = (delayMinutes === null || delayMinutes === undefined) ? cur.delayMinutes : Number(delayMinutes);
+      await conn.write(P.CHAR.TIMER, P.buildTimer(
+        minutes || cur.minutes, delay > 0, delay, rpm || cur.rpm,
+      ));
+    });
   }
 
   /* ---------------- settings ---------------- */
 
-  async onSettings({ oldSettings, newSettings, changedKeys }) {
+  async onSettings({ newSettings, changedKeys }) {
     const has = (prefix) => changedKeys.some((k) => k.indexOf(prefix) === 0);
-
-    if (changedKeys.includes('auth_key') && newSettings.auth_key) {
-      P.parseAuthCode(newSettings.auth_key); // throws a readable error if invalid
-    }
-
-    const writes = [];
     const n = newSettings;
 
-    if (has('boost_') && this._state && this._state.boost.enabled) {
-      writes.push([P.CHAR.BOOST, P.buildBoost(true, n.boost_rpm, n.boost_seconds)]);
-    }
-    if (has('constant_speed_')) {
-      const enabled = this._state ? this._state.constantSpeed.enabled : false;
-      writes.push([P.CHAR.CONSTANT_SPEED, P.buildConstantSpeed(enabled, n.constant_speed_rpm)]);
-    }
-    if (has('humidity_')) {
-      writes.push([P.CHAR.HUMIDITY,
-        P.buildHumidity(n.humidity_enabled, Number(n.humidity_detection), n.humidity_rpm)]);
-    }
-    if (has('light_') || has('voc_')) {
-      writes.push([P.CHAR.LIGHT_VOC, P.buildLightVoc(
-        n.light_enabled, Number(n.light_detection), n.voc_enabled, Number(n.voc_detection),
-      )]);
-    }
-    if (has('airing_')) {
-      writes.push([P.CHAR.AIRING, P.buildAiring(n.airing_enabled, n.airing_minutes, n.airing_rpm)]);
-    }
-    if (has('timer_')) {
-      writes.push([P.CHAR.TIMER, P.buildTimer(
-        n.timer_minutes, n.timer_delay_enabled, n.timer_delay_minutes, n.timer_rpm,
-      )]);
+    if (changedKeys.includes('auth_key') && n.auth_key) {
+      P.parseAuthCode(n.auth_key); // throws a readable error if invalid
     }
 
-    if (writes.length) {
+    const needsWrite = has('boost_') || has('humidity_') || has('airing_') || has('timer_');
+    if (needsWrite) {
       if (!n.auth_key) throw new Error(this.homey.__('errors.no_auth'));
-      // Settings are stored after onSettings resolves, so pass the new key explicitly.
+      // Settings are stored after onSettings resolves, so pass the new values explicitly.
       await this._session(async (conn) => {
-        for (const [uuid, buf] of writes) await conn.write(uuid, buf);
+        if (has('boost_')) {
+          const b = P.parseBoost(await conn.read(P.CHAR.BOOST));
+          if (b.enabled) await conn.write(P.CHAR.BOOST, P.buildBoost(true, n.boost_rpm, n.boost_seconds));
+        }
+        if (has('humidity_')) {
+          const h = P.parseHumidity(await conn.read(P.CHAR.HUMIDITY));
+          await conn.write(P.CHAR.HUMIDITY, P.buildHumidity(h.enabled, h.detection || 2, n.humidity_rpm));
+        }
+        if (has('airing_')) {
+          const a = P.parseAiring(await conn.read(P.CHAR.AIRING));
+          await conn.write(P.CHAR.AIRING, P.buildAiring(a.enabled, a.minutes || 30, n.airing_rpm));
+        }
+        if (has('timer_')) {
+          await conn.write(P.CHAR.TIMER, P.buildTimer(
+            n.timer_minutes, n.timer_delay_enabled, n.timer_delay_minutes, n.timer_rpm,
+          ));
+        }
       }, { requireAuth: true, authKey: n.auth_key, readBack: false });
     }
 
-    // Re-read after the new settings have been stored.
-    this.refreshSoon(changedKeys.includes('poll_interval') && !writes.length ? 1000 : 3000);
+    this.refreshSoon(needsWrite ? 3000 : 1000);
     return undefined;
   }
 }

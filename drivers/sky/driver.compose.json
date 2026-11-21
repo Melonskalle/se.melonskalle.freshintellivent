@@ -6,7 +6,13 @@
   "class": "fan",
   "capabilities": [
     "fresh_boost",
+    "fresh_pause",
     "fresh_constant_speed",
+    "fresh_constant_rpm",
+    "fresh_humidity_level",
+    "fresh_light_level",
+    "fresh_voc_level",
+    "fresh_airing",
     "fresh_mode",
     "fresh_rpm",
     "measure_temperature",
@@ -88,8 +94,8 @@
     {
       "type": "group",
       "label": {
-        "en": "Boost",
-        "sv": "Boost"
+        "en": "Boost & pause",
+        "sv": "Boost & paus"
       },
       "children": [
         {
@@ -122,30 +128,20 @@
             "en": "s",
             "sv": "s"
           }
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "label": {
-        "en": "Constant speed",
-        "sv": "Konstant hastighet"
-      },
-      "children": [
+        },
         {
-          "id": "constant_speed_rpm",
+          "id": "pause_minutes",
           "type": "number",
           "label": {
-            "en": "Speed",
-            "sv": "Hastighet"
+            "en": "Pause duration",
+            "sv": "Paustid"
           },
-          "value": 1000,
-          "min": 800,
-          "max": 2400,
-          "step": 10,
+          "value": 30,
+          "min": 1,
+          "max": 255,
           "units": {
-            "en": "rpm",
-            "sv": "varv/min"
+            "en": "min",
+            "sv": "min"
           }
         }
       ]
@@ -153,57 +149,16 @@
     {
       "type": "group",
       "label": {
-        "en": "Humidity",
-        "sv": "Fukt"
+        "en": "Sensor speeds",
+        "sv": "Hastigheter för sensorer"
       },
       "children": [
-        {
-          "id": "humidity_enabled",
-          "type": "checkbox",
-          "label": {
-            "en": "Enabled",
-            "sv": "Aktiverad"
-          },
-          "value": true
-        },
-        {
-          "id": "humidity_detection",
-          "type": "dropdown",
-          "label": {
-            "en": "Sensitivity",
-            "sv": "Känslighet"
-          },
-          "value": "2",
-          "values": [
-            {
-              "id": "1",
-              "label": {
-                "en": "Low",
-                "sv": "Låg"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Medium",
-                "sv": "Medel"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "High",
-                "sv": "Hög"
-              }
-            }
-          ]
-        },
         {
           "id": "humidity_rpm",
           "type": "number",
           "label": {
-            "en": "Speed (humidity & VOC)",
-            "sv": "Hastighet (fukt & VOC)"
+            "en": "Humidity & odour sensor",
+            "sv": "Fukt- & luktsensor"
           },
           "value": 1800,
           "min": 800,
@@ -213,132 +168,31 @@
             "en": "rpm",
             "sv": "varv/min"
           }
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "label": {
-        "en": "Light & VOC",
-        "sv": "Ljus & VOC"
-      },
-      "children": [
-        {
-          "id": "light_enabled",
-          "type": "checkbox",
-          "label": {
-            "en": "Light detection enabled",
-            "sv": "Ljusdetektering aktiverad"
-          },
-          "value": true
         },
         {
-          "id": "light_detection",
-          "type": "dropdown",
-          "label": {
-            "en": "Light sensitivity",
-            "sv": "Ljuskänslighet"
-          },
-          "value": "2",
-          "values": [
-            {
-              "id": "2",
-              "label": {
-                "en": "Medium",
-                "sv": "Medel"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "High",
-                "sv": "Hög"
-              }
-            }
-          ]
-        },
-        {
-          "id": "voc_enabled",
-          "type": "checkbox",
-          "label": {
-            "en": "VOC detection enabled",
-            "sv": "VOC-detektering aktiverad"
-          },
-          "value": false
-        },
-        {
-          "id": "voc_detection",
-          "type": "dropdown",
-          "label": {
-            "en": "VOC sensitivity",
-            "sv": "VOC-känslighet"
-          },
-          "value": "2",
-          "values": [
-            {
-              "id": "1",
-              "label": {
-                "en": "High",
-                "sv": "Hög"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Medium",
-                "sv": "Medel"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Low",
-                "sv": "Låg"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "label": {
-        "en": "Airing",
-        "sv": "Vädring"
-      },
-      "children": [
-        {
-          "id": "airing_enabled",
-          "type": "checkbox",
-          "label": {
-            "en": "Enabled",
-            "sv": "Aktiverad"
-          },
-          "value": false
-        },
-        {
-          "id": "airing_minutes",
+          "id": "timer_rpm",
           "type": "number",
           "label": {
-            "en": "Duration",
-            "sv": "Längd"
+            "en": "Light sensor & timer",
+            "sv": "Ljussensor & timer"
           },
-          "value": 30,
-          "min": 5,
-          "max": 120,
+          "value": 1800,
+          "min": 800,
+          "max": 2400,
+          "step": 10,
           "units": {
-            "en": "min",
-            "sv": "min"
+            "en": "rpm",
+            "sv": "varv/min"
           }
         },
         {
           "id": "airing_rpm",
           "type": "number",
           "label": {
-            "en": "Speed",
-            "sv": "Hastighet"
+            "en": "Airing",
+            "sv": "Vädring"
           },
-          "value": 1200,
+          "value": 1500,
           "min": 800,
           "max": 2400,
           "step": 10,
@@ -352,8 +206,8 @@
     {
       "type": "group",
       "label": {
-        "en": "Light timer",
-        "sv": "Ljustimer"
+        "en": "Timer",
+        "sv": "Timer"
       },
       "children": [
         {
@@ -363,7 +217,7 @@
             "en": "Run time",
             "sv": "Gångtid"
           },
-          "value": 10,
+          "value": 15,
           "min": 1,
           "max": 60,
           "units": {
@@ -387,28 +241,12 @@
             "en": "Delay",
             "sv": "Fördröjning"
           },
-          "value": 2,
+          "value": 0,
           "min": 0,
           "max": 10,
           "units": {
             "en": "min",
             "sv": "min"
-          }
-        },
-        {
-          "id": "timer_rpm",
-          "type": "number",
-          "label": {
-            "en": "Speed",
-            "sv": "Hastighet"
-          },
-          "value": 1800,
-          "min": 800,
-          "max": 2400,
-          "step": 10,
-          "units": {
-            "en": "rpm",
-            "sv": "varv/min"
           }
         }
       ]

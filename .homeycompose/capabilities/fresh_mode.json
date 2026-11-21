@@ -1,19 +1,76 @@
 {
   "type": "enum",
-  "title": { "en": "Mode", "sv": "Läge" },
+  "title": {
+    "en": "Mode",
+    "sv": "Läge"
+  },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
   "icon": "/assets/mode.svg",
   "values": [
-    { "id": "off", "title": { "en": "Off", "sv": "Av" } },
-    { "id": "pause", "title": { "en": "Pause", "sv": "Paus" } },
-    { "id": "constant_speed", "title": { "en": "Constant speed", "sv": "Konstant hastighet" } },
-    { "id": "light", "title": { "en": "Light", "sv": "Ljus" } },
-    { "id": "timer", "title": { "en": "Timer", "sv": "Timer" } },
-    { "id": "humidity", "title": { "en": "Humidity", "sv": "Fukt" } },
-    { "id": "voc", "title": { "en": "VOC", "sv": "VOC (luftkvalitet)" } },
-    { "id": "boost", "title": { "en": "Boost", "sv": "Boost" } },
-    { "id": "unknown", "title": { "en": "Unknown", "sv": "Okänt" } }
+    {
+      "id": "off",
+      "title": {
+        "en": "Off",
+        "sv": "Av"
+      }
+    },
+    {
+      "id": "pause",
+      "title": {
+        "en": "Pause",
+        "sv": "Paus"
+      }
+    },
+    {
+      "id": "constant_speed",
+      "title": {
+        "en": "Constant speed",
+        "sv": "Konstant fart"
+      }
+    },
+    {
+      "id": "light",
+      "title": {
+        "en": "Light",
+        "sv": "Ljus"
+      }
+    },
+    {
+      "id": "timer",
+      "title": {
+        "en": "Timer",
+        "sv": "Timer"
+      }
+    },
+    {
+      "id": "humidity",
+      "title": {
+        "en": "Humidity",
+        "sv": "Fukt"
+      }
+    },
+    {
+      "id": "voc",
+      "title": {
+        "en": "Odour (VOC)",
+        "sv": "Lukt"
+      }
+    },
+    {
+      "id": "boost",
+      "title": {
+        "en": "Boost",
+        "sv": "Boost"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown",
+        "sv": "Okänt"
+      }
+    }
   ]
 }

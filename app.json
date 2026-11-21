@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "se.melonskalle.freshintellivent",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "platforms": [
@@ -176,8 +176,8 @@
               {
                 "id": "voc",
                 "title": {
-                  "en": "VOC",
-                  "sv": "VOC"
+                  "en": "Odour (VOC)",
+                  "sv": "Lukt"
                 }
               },
               {
@@ -332,14 +332,43 @@
         ]
       },
       {
-        "id": "set_humidity",
+        "id": "set_constant_rpm",
         "title": {
-          "en": "Set humidity mode",
-          "sv": "Ställ in fuktläge"
+          "en": "Set constant speed",
+          "sv": "Ställ in konstant fart"
         },
         "titleFormatted": {
-          "en": "Set humidity sensitivity to [[detection]] at [[rpm]] rpm",
-          "sv": "Sätt fuktkänslighet till [[detection]] med [[rpm]] varv/min"
+          "en": "Set constant speed to [[rpm]] rpm",
+          "sv": "Ställ in konstant fart till [[rpm]] varv/min"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "number",
+            "name": "rpm",
+            "min": 800,
+            "max": 2400,
+            "step": 10,
+            "placeholder": {
+              "en": "1200",
+              "sv": "1200"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_humidity",
+        "title": {
+          "en": "Set humidity sensor",
+          "sv": "Ställ in fuktsensor"
+        },
+        "titleFormatted": {
+          "en": "Set humidity sensor to [[level]]",
+          "sv": "Ställ in fuktsensor till [[level]]"
         },
         "args": [
           {
@@ -349,7 +378,7 @@
           },
           {
             "type": "dropdown",
-            "name": "detection",
+            "name": "level",
             "values": [
               {
                 "id": "off",
@@ -359,37 +388,227 @@
                 }
               },
               {
-                "id": "1",
+                "id": "low",
                 "title": {
                   "en": "Low",
                   "sv": "Låg"
                 }
               },
               {
-                "id": "2",
+                "id": "medium",
                 "title": {
                   "en": "Medium",
-                  "sv": "Medel"
+                  "sv": "Mellan"
                 }
               },
               {
-                "id": "3",
+                "id": "high",
                 "title": {
                   "en": "High",
                   "sv": "Hög"
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "id": "set_light",
+        "title": {
+          "en": "Set light sensor",
+          "sv": "Ställ in ljussensor"
+        },
+        "titleFormatted": {
+          "en": "Set light sensor to [[level]]",
+          "sv": "Ställ in ljussensor till [[level]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "dropdown",
+            "name": "level",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "sv": "Av"
+                }
+              },
+              {
+                "id": "low",
+                "title": {
+                  "en": "Low",
+                  "sv": "Låg"
+                }
+              },
+              {
+                "id": "medium",
+                "title": {
+                  "en": "Medium",
+                  "sv": "Mellan"
+                }
+              },
+              {
+                "id": "high",
+                "title": {
+                  "en": "High",
+                  "sv": "Hög"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_voc",
+        "title": {
+          "en": "Set odour sensor",
+          "sv": "Ställ in luktsensor"
+        },
+        "titleFormatted": {
+          "en": "Set odour sensor to [[level]]",
+          "sv": "Ställ in luktsensor till [[level]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "dropdown",
+            "name": "level",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "sv": "Av"
+                }
+              },
+              {
+                "id": "low",
+                "title": {
+                  "en": "Low",
+                  "sv": "Låg"
+                }
+              },
+              {
+                "id": "medium",
+                "title": {
+                  "en": "Medium",
+                  "sv": "Mellan"
+                }
+              },
+              {
+                "id": "high",
+                "title": {
+                  "en": "High",
+                  "sv": "Hög"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_airing",
+        "title": {
+          "en": "Set airing",
+          "sv": "Ställ in vädring"
+        },
+        "titleFormatted": {
+          "en": "Set airing to [[minutes]]",
+          "sv": "Ställ in vädring till [[minutes]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "dropdown",
+            "name": "minutes",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "sv": "Av"
+                }
+              },
+              {
+                "id": "30",
+                "title": {
+                  "en": "30 min",
+                  "sv": "30 min"
+                }
+              },
+              {
+                "id": "60",
+                "title": {
+                  "en": "60 min",
+                  "sv": "60 min"
+                }
+              },
+              {
+                "id": "90",
+                "title": {
+                  "en": "90 min",
+                  "sv": "90 min"
+                }
+              },
+              {
+                "id": "120",
+                "title": {
+                  "en": "120 min",
+                  "sv": "120 min"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_timer",
+        "title": {
+          "en": "Set timer",
+          "sv": "Ställ in timer"
+        },
+        "titleFormatted": {
+          "en": "Set timer to [[minutes]] min, delay [[delay]] min",
+          "sv": "Ställ in timer till [[minutes]] min, fördröjning [[delay]] min"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
           },
           {
             "type": "number",
-            "name": "rpm",
-            "min": 800,
-            "max": 2400,
-            "step": 10,
+            "name": "minutes",
+            "min": 1,
+            "max": 60,
             "placeholder": {
-              "en": "1800",
-              "sv": "1800"
+              "en": "15",
+              "sv": "15"
+            }
+          },
+          {
+            "type": "number",
+            "name": "delay",
+            "min": 0,
+            "max": 10,
+            "placeholder": {
+              "en": "0",
+              "sv": "0"
             }
           }
         ]
@@ -405,7 +624,13 @@
       "class": "fan",
       "capabilities": [
         "fresh_boost",
+        "fresh_pause",
         "fresh_constant_speed",
+        "fresh_constant_rpm",
+        "fresh_humidity_level",
+        "fresh_light_level",
+        "fresh_voc_level",
+        "fresh_airing",
         "fresh_mode",
         "fresh_rpm",
         "measure_temperature",
@@ -487,8 +712,8 @@
         {
           "type": "group",
           "label": {
-            "en": "Boost",
-            "sv": "Boost"
+            "en": "Boost & pause",
+            "sv": "Boost & paus"
           },
           "children": [
             {
@@ -521,30 +746,20 @@
                 "en": "s",
                 "sv": "s"
               }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Constant speed",
-            "sv": "Konstant hastighet"
-          },
-          "children": [
+            },
             {
-              "id": "constant_speed_rpm",
+              "id": "pause_minutes",
               "type": "number",
               "label": {
-                "en": "Speed",
-                "sv": "Hastighet"
+                "en": "Pause duration",
+                "sv": "Paustid"
               },
-              "value": 1000,
-              "min": 800,
-              "max": 2400,
-              "step": 10,
+              "value": 30,
+              "min": 1,
+              "max": 255,
               "units": {
-                "en": "rpm",
-                "sv": "varv/min"
+                "en": "min",
+                "sv": "min"
               }
             }
           ]
@@ -552,57 +767,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Humidity",
-            "sv": "Fukt"
+            "en": "Sensor speeds",
+            "sv": "Hastigheter för sensorer"
           },
           "children": [
-            {
-              "id": "humidity_enabled",
-              "type": "checkbox",
-              "label": {
-                "en": "Enabled",
-                "sv": "Aktiverad"
-              },
-              "value": true
-            },
-            {
-              "id": "humidity_detection",
-              "type": "dropdown",
-              "label": {
-                "en": "Sensitivity",
-                "sv": "Känslighet"
-              },
-              "value": "2",
-              "values": [
-                {
-                  "id": "1",
-                  "label": {
-                    "en": "Low",
-                    "sv": "Låg"
-                  }
-                },
-                {
-                  "id": "2",
-                  "label": {
-                    "en": "Medium",
-                    "sv": "Medel"
-                  }
-                },
-                {
-                  "id": "3",
-                  "label": {
-                    "en": "High",
-                    "sv": "Hög"
-                  }
-                }
-              ]
-            },
             {
               "id": "humidity_rpm",
               "type": "number",
               "label": {
-                "en": "Speed (humidity & VOC)",
-                "sv": "Hastighet (fukt & VOC)"
+                "en": "Humidity & odour sensor",
+                "sv": "Fukt- & luktsensor"
               },
               "value": 1800,
               "min": 800,
@@ -612,132 +786,31 @@
                 "en": "rpm",
                 "sv": "varv/min"
               }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Light & VOC",
-            "sv": "Ljus & VOC"
-          },
-          "children": [
-            {
-              "id": "light_enabled",
-              "type": "checkbox",
-              "label": {
-                "en": "Light detection enabled",
-                "sv": "Ljusdetektering aktiverad"
-              },
-              "value": true
             },
             {
-              "id": "light_detection",
-              "type": "dropdown",
-              "label": {
-                "en": "Light sensitivity",
-                "sv": "Ljuskänslighet"
-              },
-              "value": "2",
-              "values": [
-                {
-                  "id": "2",
-                  "label": {
-                    "en": "Medium",
-                    "sv": "Medel"
-                  }
-                },
-                {
-                  "id": "3",
-                  "label": {
-                    "en": "High",
-                    "sv": "Hög"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "voc_enabled",
-              "type": "checkbox",
-              "label": {
-                "en": "VOC detection enabled",
-                "sv": "VOC-detektering aktiverad"
-              },
-              "value": false
-            },
-            {
-              "id": "voc_detection",
-              "type": "dropdown",
-              "label": {
-                "en": "VOC sensitivity",
-                "sv": "VOC-känslighet"
-              },
-              "value": "2",
-              "values": [
-                {
-                  "id": "1",
-                  "label": {
-                    "en": "High",
-                    "sv": "Hög"
-                  }
-                },
-                {
-                  "id": "2",
-                  "label": {
-                    "en": "Medium",
-                    "sv": "Medel"
-                  }
-                },
-                {
-                  "id": "3",
-                  "label": {
-                    "en": "Low",
-                    "sv": "Låg"
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Airing",
-            "sv": "Vädring"
-          },
-          "children": [
-            {
-              "id": "airing_enabled",
-              "type": "checkbox",
-              "label": {
-                "en": "Enabled",
-                "sv": "Aktiverad"
-              },
-              "value": false
-            },
-            {
-              "id": "airing_minutes",
+              "id": "timer_rpm",
               "type": "number",
               "label": {
-                "en": "Duration",
-                "sv": "Längd"
+                "en": "Light sensor & timer",
+                "sv": "Ljussensor & timer"
               },
-              "value": 30,
-              "min": 5,
-              "max": 120,
+              "value": 1800,
+              "min": 800,
+              "max": 2400,
+              "step": 10,
               "units": {
-                "en": "min",
-                "sv": "min"
+                "en": "rpm",
+                "sv": "varv/min"
               }
             },
             {
               "id": "airing_rpm",
               "type": "number",
               "label": {
-                "en": "Speed",
-                "sv": "Hastighet"
+                "en": "Airing",
+                "sv": "Vädring"
               },
-              "value": 1200,
+              "value": 1500,
               "min": 800,
               "max": 2400,
               "step": 10,
@@ -751,8 +824,8 @@
         {
           "type": "group",
           "label": {
-            "en": "Light timer",
-            "sv": "Ljustimer"
+            "en": "Timer",
+            "sv": "Timer"
           },
           "children": [
             {
@@ -762,7 +835,7 @@
                 "en": "Run time",
                 "sv": "Gångtid"
               },
-              "value": 10,
+              "value": 15,
               "min": 1,
               "max": 60,
               "units": {
@@ -786,28 +859,12 @@
                 "en": "Delay",
                 "sv": "Fördröjning"
               },
-              "value": 2,
+              "value": 0,
               "min": 0,
               "max": 10,
               "units": {
                 "en": "min",
                 "sv": "min"
-              }
-            },
-            {
-              "id": "timer_rpm",
-              "type": "number",
-              "label": {
-                "en": "Speed",
-                "sv": "Hastighet"
-              },
-              "value": 1800,
-              "min": 800,
-              "max": 2400,
-              "step": 10,
-              "units": {
-                "en": "rpm",
-                "sv": "varv/min"
               }
             }
           ]
@@ -844,6 +901,54 @@
     }
   ],
   "capabilities": {
+    "fresh_airing": {
+      "type": "enum",
+      "title": {
+        "en": "Airing",
+        "sv": "Vädringsfunktion"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/airing.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "sv": "Inte aktiv"
+          }
+        },
+        {
+          "id": "30",
+          "title": {
+            "en": "30 minutes",
+            "sv": "30 minuter"
+          }
+        },
+        {
+          "id": "60",
+          "title": {
+            "en": "60 minutes",
+            "sv": "60 minuter"
+          }
+        },
+        {
+          "id": "90",
+          "title": {
+            "en": "90 minutes",
+            "sv": "90 minuter"
+          }
+        },
+        {
+          "id": "120",
+          "title": {
+            "en": "120 minutes",
+            "sv": "120 minuter"
+          }
+        }
+      ]
+    },
     "fresh_boost": {
       "type": "boolean",
       "title": {
@@ -872,17 +977,118 @@
       "uiComponent": "sensor",
       "icon": "/assets/boost.svg"
     },
+    "fresh_constant_rpm": {
+      "type": "number",
+      "title": {
+        "en": "Constant speed",
+        "sv": "Konstant fart"
+      },
+      "units": {
+        "en": "rpm",
+        "sv": "varv/min"
+      },
+      "min": 800,
+      "max": 2400,
+      "step": 10,
+      "decimals": 0,
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "icon": "/assets/rpm.svg"
+    },
     "fresh_constant_speed": {
       "type": "boolean",
       "title": {
-        "en": "Constant speed",
-        "sv": "Konstant hastighet"
+        "en": "Constant speed on",
+        "sv": "Konstant fart på"
       },
       "getable": true,
       "setable": true,
       "uiComponent": "toggle",
       "uiQuickAction": false,
       "icon": "/assets/rpm.svg"
+    },
+    "fresh_humidity_level": {
+      "type": "enum",
+      "title": {
+        "en": "Humidity sensor",
+        "sv": "Fuktsensor"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/humidity.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "sv": "Ingen avkänning"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low sensitivity",
+            "sv": "Låg känslighet"
+          }
+        },
+        {
+          "id": "medium",
+          "title": {
+            "en": "Medium sensitivity",
+            "sv": "Mellan känslighet"
+          }
+        },
+        {
+          "id": "high",
+          "title": {
+            "en": "High sensitivity",
+            "sv": "Hög känslighet"
+          }
+        }
+      ]
+    },
+    "fresh_light_level": {
+      "type": "enum",
+      "title": {
+        "en": "Light sensor",
+        "sv": "Ljussensor"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/light.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "sv": "Ingen avkänning"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low sensitivity",
+            "sv": "Låg känslighet"
+          }
+        },
+        {
+          "id": "medium",
+          "title": {
+            "en": "Medium sensitivity",
+            "sv": "Mellan känslighet"
+          }
+        },
+        {
+          "id": "high",
+          "title": {
+            "en": "High sensitivity",
+            "sv": "Hög känslighet"
+          }
+        }
+      ]
     },
     "fresh_mode": {
       "type": "enum",
@@ -913,7 +1119,7 @@
           "id": "constant_speed",
           "title": {
             "en": "Constant speed",
-            "sv": "Konstant hastighet"
+            "sv": "Konstant fart"
           }
         },
         {
@@ -940,8 +1146,8 @@
         {
           "id": "voc",
           "title": {
-            "en": "VOC",
-            "sv": "VOC (luftkvalitet)"
+            "en": "Odour (VOC)",
+            "sv": "Lukt"
           }
         },
         {
@@ -960,6 +1166,18 @@
         }
       ]
     },
+    "fresh_pause": {
+      "type": "boolean",
+      "title": {
+        "en": "Pause",
+        "sv": "Paus"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "uiQuickAction": false,
+      "icon": "/assets/pause.svg"
+    },
     "fresh_rpm": {
       "type": "number",
       "title": {
@@ -976,6 +1194,47 @@
       "uiComponent": "sensor",
       "insights": true,
       "icon": "/assets/rpm.svg"
+    },
+    "fresh_voc_level": {
+      "type": "enum",
+      "title": {
+        "en": "Odour sensor",
+        "sv": "Luktsensor"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/voc.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "sv": "Ingen avkänning"
+          }
+        },
+        {
+          "id": "high",
+          "title": {
+            "en": "High sensitivity",
+            "sv": "Hög känslighet"
+          }
+        },
+        {
+          "id": "medium",
+          "title": {
+            "en": "Medium sensitivity",
+            "sv": "Mellan känslighet"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low sensitivity",
+            "sv": "Låg känslighet"
+          }
+        }
+      ]
     }
   }
 }

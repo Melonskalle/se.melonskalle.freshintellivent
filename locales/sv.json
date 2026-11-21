@@ -20,16 +20,17 @@
     "no_auth": "Autentiseringskod krävs för att styra fläkten. Lägg in den i enhetens inställningar eller kör Reparera.",
     "auth_failed": "Fläkten godkände inte autentiseringskoden. Kör Reparera för att hämta en ny.",
     "read_only": "Bara läsning: ingen autentiseringskod angiven.",
-    "no_state": "Ingen data från fläkten ännu."
+    "no_state": "Ingen data från fläkten ännu.",
+    "command_failed": "Kommandot gick inte fram: __error__"
   },
   "modes": {
     "off": "Av",
     "pause": "Paus",
-    "constant_speed": "Konstant hastighet",
+    "constant_speed": "Konstant fart",
     "light": "Ljus",
     "timer": "Timer",
     "humidity": "Fukt",
-    "voc": "VOC",
+    "voc": "Lukt",
     "boost": "Boost",
     "unknown": "Okänt"
   }

@@ -22,14 +22,16 @@ homey app install     # eller: homey app run (för att se loggen live)
    enhetens inställningar eller *Reparera*.
 
 ## Vad finns
-- **Sensorer:** temperatur, luftfuktighet, fläkthastighet (varv/min), aktuellt läge, boost kvar (min)
-- **Knappar:** Boost, Konstant hastighet
-- **Inställningar** (speglas från fläkten): boost, konstant hastighet, fukt, ljus/VOC, vädring, ljustimer
+- **Sensorer:** temperatur, luftfuktighet, fläktvarvtal, aktuellt läge, boost kvar (min)
+- **Reglage (som i Fresh-appen):** Boost, Paus, Konstant fart (på/av + varvtal),
+  Fuktsensor, Ljussensor och Luktsensor (av/låg/mellan/hög), Vädringsfunktion (av/30/60/90/120 min)
+- **Inställningar:** boost (varvtal, längd), paustid, varvtal för fukt-/luktsensor, ljussensor/timer
+  och vädring, timer (gångtid, fördröjd start)
 - **Flöden**
   - När: läget ändrades, boost startade, boost slutade
   - Och: boost körs, läget är …
-  - Då: starta boost (varv, minuter), stoppa boost, konstant hastighet på/av, pausa X min,
-    avsluta paus, ställ in fuktkänslighet
+  - Då: starta/stoppa boost, konstant fart på/av/varvtal, pausa/avsluta paus,
+    ställ in fukt-, ljus- och luktsensor, vädring och timer
 
 ## Bra att veta
 - Fläkten tar bara en Bluetooth-anslutning åt gången. Appen ansluter, läser/skriver och

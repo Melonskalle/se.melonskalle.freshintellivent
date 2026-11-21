@@ -1,0 +1,48 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Airing",
+    "sv": "Vädringsfunktion"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/airing.svg",
+  "values": [
+    {
+      "id": "off",
+      "title": {
+        "en": "Off",
+        "sv": "Inte aktiv"
+      }
+    },
+    {
+      "id": "30",
+      "title": {
+        "en": "30 minutes",
+        "sv": "30 minuter"
+      }
+    },
+    {
+      "id": "60",
+      "title": {
+        "en": "60 minutes",
+        "sv": "60 minuter"
+      }
+    },
+    {
+      "id": "90",
+      "title": {
+        "en": "90 minutes",
+        "sv": "90 minuter"
+      }
+    },
+    {
+      "id": "120",
+      "title": {
+        "en": "120 minutes",
+        "sv": "120 minuter"
+      }
+    }
+  ]
+}

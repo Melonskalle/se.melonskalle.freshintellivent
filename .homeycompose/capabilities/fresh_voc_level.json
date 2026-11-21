@@ -1,0 +1,41 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Odour sensor",
+    "sv": "Luktsensor"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/voc.svg",
+  "values": [
+    {
+      "id": "off",
+      "title": {
+        "en": "Off",
+        "sv": "Ingen avkänning"
+      }
+    },
+    {
+      "id": "high",
+      "title": {
+        "en": "High sensitivity",
+        "sv": "Hög känslighet"
+      }
+    },
+    {
+      "id": "medium",
+      "title": {
+        "en": "Medium sensitivity",
+        "sv": "Mellan känslighet"
+      }
+    },
+    {
+      "id": "low",
+      "title": {
+        "en": "Low sensitivity",
+        "sv": "Låg känslighet"
+      }
+    }
+  ]
+}

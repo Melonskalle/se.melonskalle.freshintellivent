@@ -1,0 +1,19 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Constant speed",
+    "sv": "Konstant fart"
+  },
+  "units": {
+    "en": "rpm",
+    "sv": "varv/min"
+  },
+  "min": 800,
+  "max": 2400,
+  "step": 10,
+  "decimals": 0,
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "icon": "/assets/rpm.svg"
+}

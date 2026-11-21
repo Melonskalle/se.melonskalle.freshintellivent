@@ -1,6 +1,9 @@
 {
   "type": "boolean",
-  "title": { "en": "Constant speed", "sv": "Konstant hastighet" },
+  "title": {
+    "en": "Constant speed on",
+    "sv": "Konstant fart på"
+  },
   "getable": true,
   "setable": true,
   "uiComponent": "toggle",

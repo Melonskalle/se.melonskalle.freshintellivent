@@ -20,7 +20,8 @@
     "no_auth": "An authentication code is required to control the fan. Add it in the device settings or run Repair.",
     "auth_failed": "The fan rejected the authentication code. Run Repair to fetch a new one.",
     "read_only": "Read-only: no authentication code set.",
-    "no_state": "No data from the fan yet."
+    "no_state": "No data from the fan yet.",
+    "command_failed": "Command failed: __error__"
   },
   "modes": {
     "off": "Off",
@@ -29,7 +30,7 @@
     "light": "Light",
     "timer": "Timer",
     "humidity": "Humidity",
-    "voc": "VOC",
+    "voc": "Odour (VOC)",
     "boost": "Boost",
     "unknown": "Unknown"
   }

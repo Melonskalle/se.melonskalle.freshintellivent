@@ -104,8 +104,8 @@
             {
               "id": "voc",
               "title": {
-                "en": "VOC",
-                "sv": "VOC"
+                "en": "Odour (VOC)",
+                "sv": "Lukt"
               }
             },
             {
@@ -224,19 +224,43 @@
       }
     },
     {
-      "id": "set_humidity",
+      "id": "set_constant_rpm",
       "title": {
-        "en": "Set humidity mode",
-        "sv": "Ställ in fuktläge"
+        "en": "Set constant speed",
+        "sv": "Ställ in konstant fart"
       },
       "titleFormatted": {
-        "en": "Set humidity sensitivity to [[detection]] at [[rpm]] rpm",
-        "sv": "Sätt fuktkänslighet till [[detection]] med [[rpm]] varv/min"
+        "en": "Set constant speed to [[rpm]] rpm",
+        "sv": "Ställ in konstant fart till [[rpm]] varv/min"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "rpm",
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "placeholder": {
+            "en": "1200",
+            "sv": "1200"
+          }
+        }
+      ]
+    },
+    {
+      "id": "set_humidity",
+      "title": {
+        "en": "Set humidity sensor",
+        "sv": "Ställ in fuktsensor"
+      },
+      "titleFormatted": {
+        "en": "Set humidity sensor to [[level]]",
+        "sv": "Ställ in fuktsensor till [[level]]"
       },
       "args": [
         {
           "type": "dropdown",
-          "name": "detection",
+          "name": "level",
           "values": [
             {
               "id": "off",
@@ -246,37 +270,207 @@
               }
             },
             {
-              "id": "1",
+              "id": "low",
               "title": {
                 "en": "Low",
                 "sv": "Låg"
               }
             },
             {
-              "id": "2",
+              "id": "medium",
               "title": {
                 "en": "Medium",
-                "sv": "Medel"
+                "sv": "Mellan"
               }
             },
             {
-              "id": "3",
+              "id": "high",
               "title": {
                 "en": "High",
                 "sv": "Hög"
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "set_light",
+      "title": {
+        "en": "Set light sensor",
+        "sv": "Ställ in ljussensor"
+      },
+      "titleFormatted": {
+        "en": "Set light sensor to [[level]]",
+        "sv": "Ställ in ljussensor till [[level]]"
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "level",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "sv": "Av"
+              }
+            },
+            {
+              "id": "low",
+              "title": {
+                "en": "Low",
+                "sv": "Låg"
+              }
+            },
+            {
+              "id": "medium",
+              "title": {
+                "en": "Medium",
+                "sv": "Mellan"
+              }
+            },
+            {
+              "id": "high",
+              "title": {
+                "en": "High",
+                "sv": "Hög"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "set_voc",
+      "title": {
+        "en": "Set odour sensor",
+        "sv": "Ställ in luktsensor"
+      },
+      "titleFormatted": {
+        "en": "Set odour sensor to [[level]]",
+        "sv": "Ställ in luktsensor till [[level]]"
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "level",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "sv": "Av"
+              }
+            },
+            {
+              "id": "low",
+              "title": {
+                "en": "Low",
+                "sv": "Låg"
+              }
+            },
+            {
+              "id": "medium",
+              "title": {
+                "en": "Medium",
+                "sv": "Mellan"
+              }
+            },
+            {
+              "id": "high",
+              "title": {
+                "en": "High",
+                "sv": "Hög"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "set_airing",
+      "title": {
+        "en": "Set airing",
+        "sv": "Ställ in vädring"
+      },
+      "titleFormatted": {
+        "en": "Set airing to [[minutes]]",
+        "sv": "Ställ in vädring till [[minutes]]"
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "minutes",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "sv": "Av"
+              }
+            },
+            {
+              "id": "30",
+              "title": {
+                "en": "30 min",
+                "sv": "30 min"
+              }
+            },
+            {
+              "id": "60",
+              "title": {
+                "en": "60 min",
+                "sv": "60 min"
+              }
+            },
+            {
+              "id": "90",
+              "title": {
+                "en": "90 min",
+                "sv": "90 min"
+              }
+            },
+            {
+              "id": "120",
+              "title": {
+                "en": "120 min",
+                "sv": "120 min"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "set_timer",
+      "title": {
+        "en": "Set timer",
+        "sv": "Ställ in timer"
+      },
+      "titleFormatted": {
+        "en": "Set timer to [[minutes]] min, delay [[delay]] min",
+        "sv": "Ställ in timer till [[minutes]] min, fördröjning [[delay]] min"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "minutes",
+          "min": 1,
+          "max": 60,
+          "placeholder": {
+            "en": "15",
+            "sv": "15"
+          }
         },
         {
           "type": "number",
-          "name": "rpm",
-          "min": 800,
-          "max": 2400,
-          "step": 10,
+          "name": "delay",
+          "min": 0,
+          "max": 10,
           "placeholder": {
-            "en": "1800",
-            "sv": "1800"
+            "en": "0",
+            "sv": "0"
           }
         }
       ]

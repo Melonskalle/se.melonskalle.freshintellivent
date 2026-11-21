@@ -1,0 +1,41 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Humidity sensor",
+    "sv": "Fuktsensor"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/humidity.svg",
+  "values": [
+    {
+      "id": "off",
+      "title": {
+        "en": "Off",
+        "sv": "Ingen avkänning"
+      }
+    },
+    {
+      "id": "low",
+      "title": {
+        "en": "Low sensitivity",
+        "sv": "Låg känslighet"
+      }
+    },
+    {
+      "id": "medium",
+      "title": {
+        "en": "Medium sensitivity",
+        "sv": "Mellan känslighet"
+      }
+    },
+    {
+      "id": "high",
+      "title": {
+        "en": "High sensitivity",
+        "sv": "Hög känslighet"
+      }
+    }
+  ]
+}
