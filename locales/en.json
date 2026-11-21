@@ -7,12 +7,13 @@
       "step1": "Press the power button on the fan, then hold the Bluetooth/WiFi button for 8 seconds until the fan enters pairing mode.",
       "step2": "Tap 'Fetch code from fan' within a minute, or type a code you already have (8 hex characters).",
       "fetch": "Fetch code from fan",
-      "fetching": "Connecting to the fan…",
+      "fetching": "Connecting to the fan… this can take up to a minute.",
       "fetched": "Code fetched!",
       "need_code": "Enter or fetch a code first.",
       "add": "Add with code",
       "skip": "Add without code (read-only)",
-      "save": "Save"
+      "save": "Save",
+      "timeout": "No answer from the fan within 2 minutes. Make sure nothing else (the Fresh app, another Homey app) is connected to the fan and that it is in pairing mode, then try again."
     }
   },
   "errors": {

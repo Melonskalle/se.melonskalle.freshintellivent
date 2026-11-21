@@ -7,12 +7,13 @@
       "step1": "Tryck på fläktens strömknapp och håll sedan in Bluetooth/WiFi-knappen i 8 sekunder tills fläkten går i parkopplingsläge.",
       "step2": "Tryck på 'Hämta kod från fläkten' inom en minut, eller skriv in en kod du redan har (8 hextecken).",
       "fetch": "Hämta kod från fläkten",
-      "fetching": "Ansluter till fläkten…",
+      "fetching": "Ansluter till fläkten… det kan ta upp till en minut.",
       "fetched": "Koden hämtad!",
       "need_code": "Skriv in eller hämta en kod först.",
       "add": "Lägg till med kod",
       "skip": "Lägg till utan kod (bara läsning)",
-      "save": "Spara"
+      "save": "Spara",
+      "timeout": "Inget svar från fläkten inom 2 minuter. Se till att inget annat (Fresh-appen, en annan Homey-app) är anslutet till fläkten och att den är i parkopplingsläge, och försök igen."
     }
   },
   "errors": {

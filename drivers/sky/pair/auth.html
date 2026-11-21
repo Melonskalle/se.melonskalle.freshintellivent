@@ -49,16 +49,27 @@
   document.getElementById('fetch').addEventListener('click', function () {
     show(Homey.__('pair.auth.fetching'), true);
     Homey.showLoadingOverlay();
-    Homey.emit('fetch_code')
-      .then(function (code) {
-        Homey.hideLoadingOverlay();
-        codeInput.value = code;
-        show(Homey.__('pair.auth.fetched'), true);
-      })
-      .catch(function (err) {
-        Homey.hideLoadingOverlay();
-        show(err.message || String(err));
-      });
+    var started = Date.now();
+    function fail(err) {
+      Homey.hideLoadingOverlay();
+      show((err && err.message) || String(err));
+    }
+    function poll() {
+      Homey.emit('fetch_code_status').then(function (s) {
+        if (s.state === 'done') {
+          Homey.hideLoadingOverlay();
+          codeInput.value = s.code;
+          show(Homey.__('pair.auth.fetched'), true);
+        } else if (s.state === 'error') {
+          fail(s.error);
+        } else if (Date.now() - started > 120000) {
+          fail(Homey.__('pair.auth.timeout'));
+        } else {
+          setTimeout(poll, 1500);
+        }
+      }).catch(fail);
+    }
+    Homey.emit('fetch_code_start').then(function () { setTimeout(poll, 1500); }).catch(fail);
   });
 
   function create(code) {

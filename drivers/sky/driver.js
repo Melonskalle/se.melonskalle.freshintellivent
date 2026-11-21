@@ -67,20 +67,24 @@ class SkyDriver extends Homey.Driver {
 
     session.setHandler('get_selected', async () => selected);
 
-    session.setHandler('fetch_code', async () => {
+    const job = this._codeJob();
+    session.setHandler('fetch_code_start', async () => {
       if (!selected) throw new Error(this.homey.__('pair.no_device'));
       const adv = found.find((a) => a.uuid === selected.data.id);
-      return this._fetchCode(selected.store.peripheralUuid, adv);
+      return job.start(() => this._fetchCode(selected.store.peripheralUuid, adv));
     });
+    session.setHandler('fetch_code_status', async () => job.status());
 
     session.setHandler('validate_code', async (code) => P.parseAuthCode(code).toString('hex'));
   }
 
   async onRepair(session, device) {
     session.setHandler('get_selected', async () => ({ name: device.getName() }));
-    session.setHandler('fetch_code', async () => device.runExclusive(
+    const job = this._codeJob();
+    session.setHandler('fetch_code_start', async () => job.start(() => device.runExclusive(
       () => this._fetchCode(device.getStoreValue('peripheralUuid') || device.getData().id),
-    ));
+    )));
+    session.setHandler('fetch_code_status', async () => job.status());
     session.setHandler('validate_code', async (code) => P.parseAuthCode(code).toString('hex'));
     session.setHandler('save_code', async (code) => {
       const hex = code ? P.parseAuthCode(code).toString('hex') : '';
@@ -90,14 +94,49 @@ class SkyDriver extends Homey.Driver {
     });
   }
 
+  /**
+   * Runs the code fetch in the background. Homey cancels a pairing-view emit
+   * after 30 s, and BLE connect + service discovery can take longer than that,
+   * so the view starts the job and then polls for the result.
+   */
+  _codeJob() {
+    let state = { state: 'idle' };
+    return {
+      start: (fn) => {
+        if (state.state === 'running') return state;
+        state = { state: 'running' };
+        Promise.resolve()
+          .then(fn)
+          .then((code) => { state = { state: 'done', code }; })
+          .catch((err) => {
+            this.error('Fetch code failed:', err && err.message);
+            state = { state: 'error', error: (err && err.message) || String(err) };
+          });
+        return state;
+      },
+      status: () => state,
+    };
+  }
+
   async _fetchCode(peripheralUuid, advertisement) {
-    const conn = new FreshConnection(this.homey, peripheralUuid, this.log.bind(this));
-    try {
-      await conn.open({ advertisement });
-      return await conn.fetchAuthCode();
-    } finally {
-      await conn.close();
+    let lastErr;
+    // Try the advertisement from discovery first, then a fresh lookup.
+    for (const adv of [advertisement, null]) {
+      const conn = new FreshConnection(this.homey, peripheralUuid, this.log.bind(this));
+      const t0 = Date.now();
+      try {
+        await conn.open({ advertisement: adv || undefined });
+        this.log(`Connected in ${Date.now() - t0} ms`);
+        return await conn.fetchAuthCode();
+      } catch (err) {
+        lastErr = err;
+        this.error(`Fetch attempt failed after ${Date.now() - t0} ms:`, err.message);
+        if (/pairing mode/.test(err.message)) break;
+      } finally {
+        await conn.close();
+      }
     }
+    throw lastErr;
   }
 }
 
