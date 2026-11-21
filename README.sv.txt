@@ -4,6 +4,6 @@ Se temperatur, luftfuktighet, fläkthastighet och aktuellt läge, starta boost m
 
 Med flöden kan du reagera när läget ändras eller boost startar/slutar, kontrollera om boost körs eller vilket läge fläkten är i, och starta boost, sätta konstant hastighet, pausa fläkten eller ändra fuktkänsligheten.
 
-För att kunna styra fläkten behöver Homey dess autentiseringskod. Vid parkopplingen trycker du på fläktens strömknapp och håller sedan Bluetooth-knappen i 8 sekunder, så kan Homey hämta koden. Utan kod läggs fläkten till som bara läsbar.
+För att kunna styra fläkten behöver Homey dess autentiseringskod. Vid parkopplingen trycker du en gång på av/på-symbolen och håller sedan ljus/luftkvalitet-symbolen i 8 sekunder tills den blinkar, så kan Homey hämta koden. Utan kod läggs fläkten till som bara läsbar.
 
 Fläkten tar bara emot en Bluetooth-anslutning åt gången och måste vara inom Bluetooth-räckvidd från Homey.

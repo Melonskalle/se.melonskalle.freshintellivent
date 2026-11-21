@@ -4,6 +4,6 @@ See temperature, humidity, fan speed and the current mode, start a boost with on
 
 Flows let you react to mode changes and boost start/stop, check whether a boost is running or which mode the fan is in, and start a boost, set constant speed, pause the fan or change humidity sensitivity.
 
-To control the fan, Homey needs its authentication code. During pairing, press the fan's power button and then hold the Bluetooth button for 8 seconds, after which Homey can fetch the code. Without a code the fan is added as read-only.
+To control the fan, Homey needs its authentication code. During pairing, press the on/off symbol once, then hold the light/air-quality symbol for 8 seconds until it flashes, after which Homey can fetch the code. Without a code the fan is added as read-only.
 
 The fan accepts only one Bluetooth connection at a time and must be within Bluetooth range of Homey.

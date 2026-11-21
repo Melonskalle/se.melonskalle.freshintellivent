@@ -12,6 +12,8 @@ class SkyDevice extends Homey.Device {
     this._pollTimer = null;
     this._state = null;
     this._deleted = false;
+    this._conn = null;
+    this._failures = 0;
 
     for (const cap of ['fresh_boost_remaining']) {
       if (!this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
@@ -23,9 +25,15 @@ class SkyDevice extends Homey.Device {
     this.refreshSoon(2000);
   }
 
-  onDeleted() {
+  async onDeleted() {
     this._deleted = true;
     this.homey.clearTimeout(this._pollTimer);
+    await this._dropConn();
+  }
+
+  async onUninit() {
+    this.homey.clearTimeout(this._pollTimer);
+    await this._dropConn();
   }
 
   /* ---------------- scheduling ---------------- */
@@ -59,22 +67,43 @@ class SkyDevice extends Homey.Device {
     return run;
   }
 
-  /** Connect, authenticate, run fn(conn), re-read state, disconnect. */
-  _session(fn, { requireAuth = false } = {}) {
+  /**
+   * Reuses one open connection: getting connected and resolved takes the fan
+   * ~15-20 s, so doing it on every poll would be slow and flaky. The fan may
+   * still drop the link when idle; then the next session reconnects.
+   */
+  async _getConn() {
+    if (this._conn && this._conn.isOpen) return this._conn;
+    if (this._conn) await this._conn.close();
+    const conn = new FreshConnection(
+      this.homey,
+      this.getStoreValue('peripheralUuid') || this.getData().id,
+      this.log.bind(this),
+    );
+    await conn.open();
+    this._conn = conn;
+    return conn;
+  }
+
+  async _dropConn() {
+    const c = this._conn;
+    this._conn = null;
+    if (c) await c.close();
+  }
+
+  /** Connect (or reuse), authenticate, run fn(conn), re-read state. */
+  _session(fn, { requireAuth = false, authKey, readBack = true } = {}) {
     return this.runExclusive(async () => {
-      const authKey = this.getSetting('auth_key');
-      if (requireAuth && !authKey) {
+      const key = authKey !== undefined ? authKey : this.getSetting('auth_key');
+      if (requireAuth && !key) {
         throw new Error(this.homey.__('errors.no_auth'));
       }
-      const conn = new FreshConnection(
-        this.homey,
-        this.getStoreValue('peripheralUuid') || this.getData().id,
-        this.log.bind(this),
-      );
       try {
-        await conn.open();
-        if (authKey) await conn.authenticate(authKey);
+        const conn = await this._getConn();
+        // The fan forgets authentication after a few seconds idle; re-send each time.
+        if (key) await conn.authenticate(key);
         if (fn) await fn(conn);
+        if (!readBack) return null;
         if (!this.getStoreValue('info')) {
           const info = await conn.readDeviceInfo();
           await this.setStoreValue('info', info).catch(this.error);
@@ -84,15 +113,18 @@ class SkyDevice extends Homey.Device {
           }).catch(this.error);
         }
         const state = await conn.readAll();
-        await this._applyState(state);
+        await this._applyState(state, key);
+        this._failures = 0;
         await this.setAvailable().catch(this.error);
         return state;
       } catch (err) {
         this.error('BLE session failed:', err.message);
-        await this.setUnavailable(err.message).catch(this.error);
+        await this._dropConn();
+        this._failures = (this._failures || 0) + 1;
+        // One failed poll is normal for this fan; only flag it after repeated failures.
+        if (this._failures >= 3) await this.setUnavailable(err.message).catch(this.error);
         throw err;
       } finally {
-        await conn.close();
         this._scheduleNext();
       }
     });
@@ -104,7 +136,7 @@ class SkyDevice extends Homey.Device {
 
   /* ---------------- state -> Homey ---------------- */
 
-  async _applyState(state) {
+  async _applyState(state, key) {
     const prev = this._state;
     this._state = state;
     const s = state.status;
@@ -118,9 +150,9 @@ class SkyDevice extends Homey.Device {
     await this._set('fresh_boost_remaining',
       state.boost.enabled ? Math.round((state.boost.seconds / 60) * 10) / 10 : 0);
 
-    if (this.getSetting('auth_key') && !s.authenticated) {
+    if (key && !s.authenticated) {
       await this.setWarning(this.homey.__('errors.auth_failed')).catch(this.error);
-    } else if (!this.getSetting('auth_key')) {
+    } else if (!key) {
       await this.setWarning(this.homey.__('errors.read_only')).catch(this.error);
     } else {
       await this.unsetWarning().catch(this.error);
@@ -283,19 +315,10 @@ class SkyDevice extends Homey.Device {
 
     if (writes.length) {
       if (!n.auth_key) throw new Error(this.homey.__('errors.no_auth'));
-      // Settings are saved after onSettings resolves, so authenticate with the new key directly.
-      await this.runExclusive(async () => {
-        const conn = new FreshConnection(
-          this.homey, this.getStoreValue('peripheralUuid') || this.getData().id, this.log.bind(this),
-        );
-        try {
-          await conn.open();
-          await conn.authenticate(n.auth_key);
-          for (const [uuid, buf] of writes) await conn.write(uuid, buf);
-        } finally {
-          await conn.close();
-        }
-      });
+      // Settings are stored after onSettings resolves, so pass the new key explicitly.
+      await this._session(async (conn) => {
+        for (const [uuid, buf] of writes) await conn.write(uuid, buf);
+      }, { requireAuth: true, authKey: n.auth_key, readBack: false });
     }
 
     // Re-read after the new settings have been stored.

@@ -4,7 +4,7 @@
     "auth": {
       "title": "Autentiseringskod",
       "intro": "För att styra fläkten behöver Homey dess autentiseringskod (4 byte). Utan kod kan fläkten bara läsas av.",
-      "step1": "Tryck på fläktens strömknapp och håll sedan in Bluetooth/WiFi-knappen i 8 sekunder tills fläkten går i parkopplingsläge.",
+      "step1": "Slå på fläkten: tryck en gång på av/på-symbolen på panelen, håll sedan in ljus/luftkvalitet-symbolen i 8 sekunder tills den börjar blinka (parkopplingsläge).",
       "step2": "Tryck på 'Hämta kod från fläkten' inom en minut, eller skriv in en kod du redan har (8 hextecken).",
       "fetch": "Hämta kod från fläkten",
       "fetching": "Ansluter till fläkten… det kan ta upp till en minut.",

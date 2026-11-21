@@ -4,7 +4,7 @@
     "auth": {
       "title": "Authentication code",
       "intro": "To control the fan, Homey needs its 4-byte authentication code. Without it the fan can only be read.",
-      "step1": "Press the power button on the fan, then hold the Bluetooth/WiFi button for 8 seconds until the fan enters pairing mode.",
+      "step1": "Wake the fan: press the on/off symbol on the panel once, then press and hold the light/air-quality symbol for 8 seconds until it starts flashing (pairing mode).",
       "step2": "Tap 'Fetch code from fan' within a minute, or type a code you already have (8 hex characters).",
       "fetch": "Fetch code from fan",
       "fetching": "Connecting to the fan… this can take up to a minute.",

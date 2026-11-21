@@ -14,8 +14,9 @@ homey app install     # eller: homey app run (för att se loggen live)
 ## Lägga till fläkten
 1. Lägg till enhet → Fresh Intellivent → Intellivent Sky / ICE. Homey söker via Bluetooth.
 2. Välj fläkten.
-3. För styrning behövs autentiseringskoden: tryck på fläktens strömknapp och håll sedan
-   Bluetooth/WiFi-knappen i 8 sekunder (parkopplingsläge) → "Hämta kod från fläkten".
+3. För styrning behövs autentiseringskoden: tryck en gång på av/på-symbolen på panelen och håll
+   sedan ljus/luftkvalitet-symbolen i 8 sekunder tills den blinkar (parkopplingsläge)
+   → "Hämta kod från fläkten". Det kan ta upp till en minut.
    Har du koden från Home Assistant kan du skriva in den direkt (8 hextecken).
 4. Utan kod läggs fläkten till som bara läsande. Koden kan läggas till senare via
    enhetens inställningar eller *Reparera*.
@@ -41,5 +42,6 @@ homey app install     # eller: homey app run (för att se loggen live)
 
 ## Tack till
 - [angoyd/freshintelliventHacs](https://github.com/angoyd/freshintelliventHacs) och pyfreshintellivent – protokollet
+- [JYxfeldt/Homey-Intellivent](https://github.com/JYxfeldt/Homey-Intellivent) – metoden att upprepa tjänsteuppslaget på samma anslutning (Homey ger ~10 s, fläkten behöver ~16 s)
 - [SavyTechLabs/Fresh-Intellivent](https://github.com/SavyTechLabs/Fresh-Intellivent) (MIT) – fläktens GATT-service-UUID:er
   och insikten att fullständig tjänsteuppslagning är för långsam (fläkten kopplar ner efter ~5 s)
