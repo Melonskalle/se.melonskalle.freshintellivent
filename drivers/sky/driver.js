@@ -119,25 +119,22 @@ class SkyDriver extends Homey.Driver {
   }
 
   async _fetchCode(peripheralUuid, advertisement) {
-    let lastErr;
-    // Try the advertisement from discovery first, then a fresh lookup.
-    for (const adv of [advertisement, null]) {
-      const conn = new FreshConnection(this.homey, peripheralUuid, this.log.bind(this));
-      const t0 = Date.now();
-      try {
-        await conn.open({ advertisement: adv || undefined });
-        this.log(`Connected in ${Date.now() - t0} ms`);
-        return await conn.fetchAuthCode();
-      } catch (err) {
-        lastErr = err;
-        this.error(`Fetch attempt failed after ${Date.now() - t0} ms:`, err.message);
-        if (/pairing mode/.test(err.message)) break;
-      } finally {
-        await conn.close();
-      }
+    const conn = new FreshConnection(this.homey, peripheralUuid, this.log.bind(this));
+    try {
+      await conn.open({ advertisement, attempts: 4 });
+      const code = await conn.fetchAuthCode();
+      // Confirm the code actually unlocks the fan before handing it back.
+      const ok = await conn.authenticate(code).catch((err) => {
+        this.error('Verifying code failed:', err.message);
+        return null;
+      });
+      this.log(`Fetched code, verified: ${ok}`);
+      return code;
+    } finally {
+      await conn.close();
     }
-    throw lastErr;
   }
+
 }
 
 module.exports = SkyDriver;

@@ -38,3 +38,8 @@ homey app install     # eller: homey app run (för att se loggen live)
 - Standardintervall 120 s. Under boost görs en extra avläsning direkt när boosten är slut.
 - Känslighetsnivåerna skrivs som de råa värden fläkten själv rapporterar (VOC har omvänd
   skala: 1 = hög, 3 = låg, enligt pyfreshintellivent).
+
+## Tack till
+- [angoyd/freshintelliventHacs](https://github.com/angoyd/freshintelliventHacs) och pyfreshintellivent – protokollet
+- [SavyTechLabs/Fresh-Intellivent](https://github.com/SavyTechLabs/Fresh-Intellivent) (MIT) – fläktens GATT-service-UUID:er
+  och insikten att fullständig tjänsteuppslagning är för långsam (fläkten kopplar ner efter ~5 s)
