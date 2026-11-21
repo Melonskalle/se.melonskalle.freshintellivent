@@ -1,0 +1,981 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "se.melonskalle.freshintellivent",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Fresh Intellivent",
+    "sv": "Fresh Intellivent"
+  },
+  "description": {
+    "en": "Control Fresh Intellivent Sky/ICE bathroom fans over Bluetooth.",
+    "sv": "Styr Fresh Intellivent Sky/ICE-badrumsfläktar via Bluetooth."
+  },
+  "category": [
+    "climate"
+  ],
+  "permissions": [
+    "homey:wireless:ble"
+  ],
+  "brandColor": "#0F6E8C",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Mats",
+    "email": "mats@example.com"
+  },
+  "source": "https://github.com/Melonskalle/se.melonskalle.freshintellivent",
+  "bugs": {
+    "url": "https://github.com/Melonskalle/se.melonskalle.freshintellivent/issues"
+  },
+  "homeyCommunityTopicId": 0,
+  "support": "https://github.com/Melonskalle/se.melonskalle.freshintellivent/issues",
+  "flow": {
+    "triggers": [
+      {
+        "id": "mode_changed",
+        "title": {
+          "en": "Mode changed",
+          "sv": "Läget ändrades"
+        },
+        "tokens": [
+          {
+            "name": "mode",
+            "type": "string",
+            "title": {
+              "en": "Mode",
+              "sv": "Läge"
+            },
+            "example": {
+              "en": "Humidity",
+              "sv": "Fukt"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      },
+      {
+        "id": "boost_started",
+        "title": {
+          "en": "Boost started",
+          "sv": "Boost startade"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      },
+      {
+        "id": "boost_stopped",
+        "title": {
+          "en": "Boost stopped",
+          "sv": "Boost slutade"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "boost_active",
+        "title": {
+          "en": "Boost !{{is|is not}} running",
+          "sv": "Boost !{{körs|körs inte}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      },
+      {
+        "id": "mode_is",
+        "title": {
+          "en": "Mode !{{is|is not}}",
+          "sv": "Läget !{{är|är inte}}"
+        },
+        "titleFormatted": {
+          "en": "Mode !{{is|is not}} [[mode]]",
+          "sv": "Läget !{{är|är inte}} [[mode]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "sv": "Av"
+                }
+              },
+              {
+                "id": "pause",
+                "title": {
+                  "en": "Pause",
+                  "sv": "Paus"
+                }
+              },
+              {
+                "id": "constant_speed",
+                "title": {
+                  "en": "Constant speed",
+                  "sv": "Konstant hastighet"
+                }
+              },
+              {
+                "id": "light",
+                "title": {
+                  "en": "Light",
+                  "sv": "Ljus"
+                }
+              },
+              {
+                "id": "timer",
+                "title": {
+                  "en": "Timer",
+                  "sv": "Timer"
+                }
+              },
+              {
+                "id": "humidity",
+                "title": {
+                  "en": "Humidity",
+                  "sv": "Fukt"
+                }
+              },
+              {
+                "id": "voc",
+                "title": {
+                  "en": "VOC",
+                  "sv": "VOC"
+                }
+              },
+              {
+                "id": "boost",
+                "title": {
+                  "en": "Boost",
+                  "sv": "Boost"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "boost_start",
+        "title": {
+          "en": "Start boost",
+          "sv": "Starta boost"
+        },
+        "titleFormatted": {
+          "en": "Start boost at [[rpm]] rpm for [[minutes]] minutes",
+          "sv": "Starta boost på [[rpm]] varv/min i [[minutes]] minuter"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "number",
+            "name": "rpm",
+            "min": 800,
+            "max": 2400,
+            "step": 10,
+            "placeholder": {
+              "en": "2400",
+              "sv": "2400"
+            }
+          },
+          {
+            "type": "number",
+            "name": "minutes",
+            "min": 1,
+            "max": 60,
+            "placeholder": {
+              "en": "10",
+              "sv": "10"
+            }
+          }
+        ]
+      },
+      {
+        "id": "boost_stop",
+        "title": {
+          "en": "Stop boost",
+          "sv": "Stoppa boost"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      },
+      {
+        "id": "constant_speed_on",
+        "title": {
+          "en": "Turn on constant speed",
+          "sv": "Slå på konstant hastighet"
+        },
+        "titleFormatted": {
+          "en": "Turn on constant speed at [[rpm]] rpm",
+          "sv": "Slå på konstant hastighet på [[rpm]] varv/min"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "number",
+            "name": "rpm",
+            "min": 800,
+            "max": 2400,
+            "step": 10,
+            "placeholder": {
+              "en": "1000",
+              "sv": "1000"
+            }
+          }
+        ]
+      },
+      {
+        "id": "constant_speed_off",
+        "title": {
+          "en": "Turn off constant speed",
+          "sv": "Stäng av konstant hastighet"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      },
+      {
+        "id": "pause_start",
+        "title": {
+          "en": "Pause the fan",
+          "sv": "Pausa fläkten"
+        },
+        "titleFormatted": {
+          "en": "Pause the fan for [[minutes]] minutes",
+          "sv": "Pausa fläkten i [[minutes]] minuter"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "number",
+            "name": "minutes",
+            "min": 1,
+            "max": 255,
+            "placeholder": {
+              "en": "30",
+              "sv": "30"
+            }
+          }
+        ]
+      },
+      {
+        "id": "pause_stop",
+        "title": {
+          "en": "End pause",
+          "sv": "Avsluta paus"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          }
+        ]
+      },
+      {
+        "id": "set_humidity",
+        "title": {
+          "en": "Set humidity mode",
+          "sv": "Ställ in fuktläge"
+        },
+        "titleFormatted": {
+          "en": "Set humidity sensitivity to [[detection]] at [[rpm]] rpm",
+          "sv": "Sätt fuktkänslighet till [[detection]] med [[rpm]] varv/min"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=sky"
+          },
+          {
+            "type": "dropdown",
+            "name": "detection",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off",
+                  "sv": "Av"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Low",
+                  "sv": "Låg"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Medium",
+                  "sv": "Medel"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "High",
+                  "sv": "Hög"
+                }
+              }
+            ]
+          },
+          {
+            "type": "number",
+            "name": "rpm",
+            "min": 800,
+            "max": 2400,
+            "step": 10,
+            "placeholder": {
+              "en": "1800",
+              "sv": "1800"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Intellivent Sky / ICE",
+        "sv": "Intellivent Sky / ICE"
+      },
+      "class": "fan",
+      "capabilities": [
+        "fresh_boost",
+        "fresh_constant_speed",
+        "fresh_mode",
+        "fresh_rpm",
+        "measure_temperature",
+        "measure_humidity",
+        "fresh_boost_remaining"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "ble"
+      ],
+      "images": {
+        "small": "/drivers/sky/assets/images/small.png",
+        "large": "/drivers/sky/assets/images/large.png",
+        "xlarge": "/drivers/sky/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "options": {
+            "singular": true
+          },
+          "navigation": {
+            "next": "auth"
+          }
+        },
+        {
+          "id": "auth",
+          "navigation": {
+            "prev": "list_devices"
+          }
+        }
+      ],
+      "repair": [
+        {
+          "id": "repair_auth"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Connection",
+            "sv": "Anslutning"
+          },
+          "children": [
+            {
+              "id": "auth_key",
+              "type": "text",
+              "label": {
+                "en": "Authentication code",
+                "sv": "Autentiseringskod"
+              },
+              "value": "",
+              "hint": {
+                "en": "8 hex characters. Without it the app is read-only. Use 'Repair' to fetch it from the fan in pairing mode.",
+                "sv": "8 hextecken. Utan kod är appen bara läsande. Använd 'Reparera' för att hämta den från fläkten i parkopplingsläge."
+              }
+            },
+            {
+              "id": "poll_interval",
+              "type": "number",
+              "label": {
+                "en": "Poll interval",
+                "sv": "Uppdateringsintervall"
+              },
+              "value": 120,
+              "min": 30,
+              "max": 3600,
+              "units": {
+                "en": "s",
+                "sv": "s"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Boost",
+            "sv": "Boost"
+          },
+          "children": [
+            {
+              "id": "boost_rpm",
+              "type": "number",
+              "label": {
+                "en": "Boost speed",
+                "sv": "Boosthastighet"
+              },
+              "value": 2400,
+              "min": 800,
+              "max": 2400,
+              "step": 10,
+              "units": {
+                "en": "rpm",
+                "sv": "varv/min"
+              }
+            },
+            {
+              "id": "boost_seconds",
+              "type": "number",
+              "label": {
+                "en": "Boost duration",
+                "sv": "Boostlängd"
+              },
+              "value": 600,
+              "min": 60,
+              "max": 3600,
+              "units": {
+                "en": "s",
+                "sv": "s"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Constant speed",
+            "sv": "Konstant hastighet"
+          },
+          "children": [
+            {
+              "id": "constant_speed_rpm",
+              "type": "number",
+              "label": {
+                "en": "Speed",
+                "sv": "Hastighet"
+              },
+              "value": 1000,
+              "min": 800,
+              "max": 2400,
+              "step": 10,
+              "units": {
+                "en": "rpm",
+                "sv": "varv/min"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Humidity",
+            "sv": "Fukt"
+          },
+          "children": [
+            {
+              "id": "humidity_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "Enabled",
+                "sv": "Aktiverad"
+              },
+              "value": true
+            },
+            {
+              "id": "humidity_detection",
+              "type": "dropdown",
+              "label": {
+                "en": "Sensitivity",
+                "sv": "Känslighet"
+              },
+              "value": "2",
+              "values": [
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Low",
+                    "sv": "Låg"
+                  }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Medium",
+                    "sv": "Medel"
+                  }
+                },
+                {
+                  "id": "3",
+                  "label": {
+                    "en": "High",
+                    "sv": "Hög"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "humidity_rpm",
+              "type": "number",
+              "label": {
+                "en": "Speed (humidity & VOC)",
+                "sv": "Hastighet (fukt & VOC)"
+              },
+              "value": 1800,
+              "min": 800,
+              "max": 2400,
+              "step": 10,
+              "units": {
+                "en": "rpm",
+                "sv": "varv/min"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Light & VOC",
+            "sv": "Ljus & VOC"
+          },
+          "children": [
+            {
+              "id": "light_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "Light detection enabled",
+                "sv": "Ljusdetektering aktiverad"
+              },
+              "value": true
+            },
+            {
+              "id": "light_detection",
+              "type": "dropdown",
+              "label": {
+                "en": "Light sensitivity",
+                "sv": "Ljuskänslighet"
+              },
+              "value": "2",
+              "values": [
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Medium",
+                    "sv": "Medel"
+                  }
+                },
+                {
+                  "id": "3",
+                  "label": {
+                    "en": "High",
+                    "sv": "Hög"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "voc_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "VOC detection enabled",
+                "sv": "VOC-detektering aktiverad"
+              },
+              "value": false
+            },
+            {
+              "id": "voc_detection",
+              "type": "dropdown",
+              "label": {
+                "en": "VOC sensitivity",
+                "sv": "VOC-känslighet"
+              },
+              "value": "2",
+              "values": [
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "High",
+                    "sv": "Hög"
+                  }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Medium",
+                    "sv": "Medel"
+                  }
+                },
+                {
+                  "id": "3",
+                  "label": {
+                    "en": "Low",
+                    "sv": "Låg"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Airing",
+            "sv": "Vädring"
+          },
+          "children": [
+            {
+              "id": "airing_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "Enabled",
+                "sv": "Aktiverad"
+              },
+              "value": false
+            },
+            {
+              "id": "airing_minutes",
+              "type": "number",
+              "label": {
+                "en": "Duration",
+                "sv": "Längd"
+              },
+              "value": 30,
+              "min": 5,
+              "max": 120,
+              "units": {
+                "en": "min",
+                "sv": "min"
+              }
+            },
+            {
+              "id": "airing_rpm",
+              "type": "number",
+              "label": {
+                "en": "Speed",
+                "sv": "Hastighet"
+              },
+              "value": 1200,
+              "min": 800,
+              "max": 2400,
+              "step": 10,
+              "units": {
+                "en": "rpm",
+                "sv": "varv/min"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Light timer",
+            "sv": "Ljustimer"
+          },
+          "children": [
+            {
+              "id": "timer_minutes",
+              "type": "number",
+              "label": {
+                "en": "Run time",
+                "sv": "Gångtid"
+              },
+              "value": 10,
+              "min": 1,
+              "max": 60,
+              "units": {
+                "en": "min",
+                "sv": "min"
+              }
+            },
+            {
+              "id": "timer_delay_enabled",
+              "type": "checkbox",
+              "label": {
+                "en": "Delayed start",
+                "sv": "Fördröjd start"
+              },
+              "value": false
+            },
+            {
+              "id": "timer_delay_minutes",
+              "type": "number",
+              "label": {
+                "en": "Delay",
+                "sv": "Fördröjning"
+              },
+              "value": 2,
+              "min": 0,
+              "max": 10,
+              "units": {
+                "en": "min",
+                "sv": "min"
+              }
+            },
+            {
+              "id": "timer_rpm",
+              "type": "number",
+              "label": {
+                "en": "Speed",
+                "sv": "Hastighet"
+              },
+              "value": 1800,
+              "min": 800,
+              "max": 2400,
+              "step": 10,
+              "units": {
+                "en": "rpm",
+                "sv": "varv/min"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Information",
+            "sv": "Information"
+          },
+          "children": [
+            {
+              "id": "info_manufacturer",
+              "type": "label",
+              "label": {
+                "en": "Manufacturer",
+                "sv": "Tillverkare"
+              },
+              "value": "-"
+            },
+            {
+              "id": "info_firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware",
+                "sv": "Firmware"
+              },
+              "value": "-"
+            }
+          ]
+        }
+      ],
+      "id": "sky"
+    }
+  ],
+  "capabilities": {
+    "fresh_boost": {
+      "type": "boolean",
+      "title": {
+        "en": "Boost",
+        "sv": "Boost"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "uiQuickAction": true,
+      "icon": "/assets/boost.svg"
+    },
+    "fresh_boost_remaining": {
+      "type": "number",
+      "title": {
+        "en": "Boost time remaining",
+        "sv": "Boost kvar"
+      },
+      "units": {
+        "en": "min",
+        "sv": "min"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/boost.svg"
+    },
+    "fresh_constant_speed": {
+      "type": "boolean",
+      "title": {
+        "en": "Constant speed",
+        "sv": "Konstant hastighet"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "uiQuickAction": false,
+      "icon": "/assets/rpm.svg"
+    },
+    "fresh_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Mode",
+        "sv": "Läge"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/mode.svg",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "sv": "Av"
+          }
+        },
+        {
+          "id": "pause",
+          "title": {
+            "en": "Pause",
+            "sv": "Paus"
+          }
+        },
+        {
+          "id": "constant_speed",
+          "title": {
+            "en": "Constant speed",
+            "sv": "Konstant hastighet"
+          }
+        },
+        {
+          "id": "light",
+          "title": {
+            "en": "Light",
+            "sv": "Ljus"
+          }
+        },
+        {
+          "id": "timer",
+          "title": {
+            "en": "Timer",
+            "sv": "Timer"
+          }
+        },
+        {
+          "id": "humidity",
+          "title": {
+            "en": "Humidity",
+            "sv": "Fukt"
+          }
+        },
+        {
+          "id": "voc",
+          "title": {
+            "en": "VOC",
+            "sv": "VOC (luftkvalitet)"
+          }
+        },
+        {
+          "id": "boost",
+          "title": {
+            "en": "Boost",
+            "sv": "Boost"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "sv": "Okänt"
+          }
+        }
+      ]
+    },
+    "fresh_rpm": {
+      "type": "number",
+      "title": {
+        "en": "Fan speed",
+        "sv": "Fläkthastighet"
+      },
+      "units": {
+        "en": "rpm",
+        "sv": "varv/min"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/rpm.svg"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "number",
+  "title": { "en": "Boost time remaining", "sv": "Boost kvar" },
+  "units": { "en": "min", "sv": "min" },
+  "decimals": 1,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/boost.svg"
+}

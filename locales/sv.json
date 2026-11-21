@@ -1,0 +1,35 @@
+{
+  "pair": {
+    "no_device": "Ingen fläkt vald. Gå tillbaka och välj en fläkt.",
+    "auth": {
+      "title": "Autentiseringskod",
+      "intro": "För att styra fläkten behöver Homey dess autentiseringskod (4 byte). Utan kod kan fläkten bara läsas av.",
+      "step1": "Tryck på fläktens strömknapp och håll sedan in Bluetooth/WiFi-knappen i 8 sekunder tills fläkten går i parkopplingsläge.",
+      "step2": "Tryck på 'Hämta kod från fläkten' inom en minut, eller skriv in en kod du redan har (8 hextecken).",
+      "fetch": "Hämta kod från fläkten",
+      "fetching": "Ansluter till fläkten…",
+      "fetched": "Koden hämtad!",
+      "need_code": "Skriv in eller hämta en kod först.",
+      "add": "Lägg till med kod",
+      "skip": "Lägg till utan kod (bara läsning)",
+      "save": "Spara"
+    }
+  },
+  "errors": {
+    "no_auth": "Autentiseringskod krävs för att styra fläkten. Lägg in den i enhetens inställningar eller kör Reparera.",
+    "auth_failed": "Fläkten godkände inte autentiseringskoden. Kör Reparera för att hämta en ny.",
+    "read_only": "Bara läsning: ingen autentiseringskod angiven.",
+    "no_state": "Ingen data från fläkten ännu."
+  },
+  "modes": {
+    "off": "Av",
+    "pause": "Paus",
+    "constant_speed": "Konstant hastighet",
+    "light": "Ljus",
+    "timer": "Timer",
+    "humidity": "Fukt",
+    "voc": "VOC",
+    "boost": "Boost",
+    "unknown": "Okänt"
+  }
+}

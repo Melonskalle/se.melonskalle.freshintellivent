@@ -1,0 +1,88 @@
+<style>
+  .fi-wrap { padding: 4px 0; }
+  .fi-wrap p { margin: 0 0 12px; line-height: 1.4; }
+  .fi-row { display: flex; gap: 8px; margin: 12px 0; }
+  .fi-row input { flex: 1; font-family: monospace; font-size: 16px; }
+  .fi-msg { min-height: 20px; margin: 8px 0; }
+  .fi-err { color: #c0392b; }
+  .fi-ok { color: #1e8449; }
+  .fi-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+</style>
+
+<div class="fi-wrap">
+  <p data-i18n="pair.auth.intro"></p>
+  <ol>
+    <li data-i18n="pair.auth.step1"></li>
+    <li data-i18n="pair.auth.step2"></li>
+  </ol>
+
+  <button class="homey-button-secondary-full" id="fetch" data-i18n="pair.auth.fetch"></button>
+
+  <div class="fi-row">
+    <input class="homey-form-input" id="code" maxlength="8" placeholder="a1b2c3d4" autocomplete="off" />
+  </div>
+  <div class="fi-msg" id="msg"></div>
+
+  <div class="fi-buttons">
+    <button class="homey-button-primary-full" id="add" data-i18n="pair.auth.add"></button>
+    <button class="homey-button-transparent" id="skip" data-i18n="pair.auth.skip"></button>
+  </div>
+</div>
+
+<script type="application/javascript">
+  var device = null;
+  var msg = document.getElementById('msg');
+  var codeInput = document.getElementById('code');
+
+  function show(text, ok) {
+    msg.textContent = text || '';
+    msg.className = 'fi-msg ' + (ok ? 'fi-ok' : 'fi-err');
+  }
+
+  Homey.setTitle(Homey.__('pair.auth.title'));
+
+  Homey.emit('get_selected').then(function (d) {
+    device = d;
+    if (!device) show(Homey.__('pair.no_device'));
+  });
+
+  document.getElementById('fetch').addEventListener('click', function () {
+    show(Homey.__('pair.auth.fetching'), true);
+    Homey.showLoadingOverlay();
+    Homey.emit('fetch_code')
+      .then(function (code) {
+        Homey.hideLoadingOverlay();
+        codeInput.value = code;
+        show(Homey.__('pair.auth.fetched'), true);
+      })
+      .catch(function (err) {
+        Homey.hideLoadingOverlay();
+        show(err.message || String(err));
+      });
+  });
+
+  function create(code) {
+    if (!device) return show(Homey.__('pair.no_device'));
+    var d = {
+      name: device.name,
+      data: device.data,
+      store: device.store,
+      settings: { auth_key: code || '' },
+    };
+    Homey.createDevice(d)
+      .then(function () { Homey.done(); })
+      .catch(function (err) { show(err.message || String(err)); });
+  }
+
+  document.getElementById('add').addEventListener('click', function () {
+    var code = codeInput.value.trim();
+    if (!code) return show(Homey.__('pair.auth.need_code'));
+    Homey.emit('validate_code', code)
+      .then(function (hex) { create(hex); })
+      .catch(function (err) { show(err.message || String(err)); });
+  });
+
+  document.getElementById('skip').addEventListener('click', function () {
+    create('');
+  });
+</script>

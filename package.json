@@ -1,0 +1,13 @@
+{
+  "name": "se.melonskalle.freshintellivent",
+  "version": "1.0.0",
+  "description": "Fresh Intellivent Sky for Homey (BLE)",
+  "main": "app.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "node test/protocol.test.js"
+  },
+  "devDependencies": {
+    "homey": "^4.4.0"
+  }
+}

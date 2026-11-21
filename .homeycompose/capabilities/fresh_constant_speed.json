@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Constant speed", "sv": "Konstant hastighet" },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "uiQuickAction": false,
+  "icon": "/assets/rpm.svg"
+}

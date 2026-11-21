@@ -1,0 +1,285 @@
+{
+  "triggers": [
+    {
+      "id": "mode_changed",
+      "title": {
+        "en": "Mode changed",
+        "sv": "Läget ändrades"
+      },
+      "tokens": [
+        {
+          "name": "mode",
+          "type": "string",
+          "title": {
+            "en": "Mode",
+            "sv": "Läge"
+          },
+          "example": {
+            "en": "Humidity",
+            "sv": "Fukt"
+          }
+        }
+      ]
+    },
+    {
+      "id": "boost_started",
+      "title": {
+        "en": "Boost started",
+        "sv": "Boost startade"
+      }
+    },
+    {
+      "id": "boost_stopped",
+      "title": {
+        "en": "Boost stopped",
+        "sv": "Boost slutade"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "boost_active",
+      "title": {
+        "en": "Boost !{{is|is not}} running",
+        "sv": "Boost !{{körs|körs inte}}"
+      }
+    },
+    {
+      "id": "mode_is",
+      "title": {
+        "en": "Mode !{{is|is not}}",
+        "sv": "Läget !{{är|är inte}}"
+      },
+      "titleFormatted": {
+        "en": "Mode !{{is|is not}} [[mode]]",
+        "sv": "Läget !{{är|är inte}} [[mode]]"
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "mode",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "sv": "Av"
+              }
+            },
+            {
+              "id": "pause",
+              "title": {
+                "en": "Pause",
+                "sv": "Paus"
+              }
+            },
+            {
+              "id": "constant_speed",
+              "title": {
+                "en": "Constant speed",
+                "sv": "Konstant hastighet"
+              }
+            },
+            {
+              "id": "light",
+              "title": {
+                "en": "Light",
+                "sv": "Ljus"
+              }
+            },
+            {
+              "id": "timer",
+              "title": {
+                "en": "Timer",
+                "sv": "Timer"
+              }
+            },
+            {
+              "id": "humidity",
+              "title": {
+                "en": "Humidity",
+                "sv": "Fukt"
+              }
+            },
+            {
+              "id": "voc",
+              "title": {
+                "en": "VOC",
+                "sv": "VOC"
+              }
+            },
+            {
+              "id": "boost",
+              "title": {
+                "en": "Boost",
+                "sv": "Boost"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "boost_start",
+      "title": {
+        "en": "Start boost",
+        "sv": "Starta boost"
+      },
+      "titleFormatted": {
+        "en": "Start boost at [[rpm]] rpm for [[minutes]] minutes",
+        "sv": "Starta boost på [[rpm]] varv/min i [[minutes]] minuter"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "rpm",
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "placeholder": {
+            "en": "2400",
+            "sv": "2400"
+          }
+        },
+        {
+          "type": "number",
+          "name": "minutes",
+          "min": 1,
+          "max": 60,
+          "placeholder": {
+            "en": "10",
+            "sv": "10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "boost_stop",
+      "title": {
+        "en": "Stop boost",
+        "sv": "Stoppa boost"
+      }
+    },
+    {
+      "id": "constant_speed_on",
+      "title": {
+        "en": "Turn on constant speed",
+        "sv": "Slå på konstant hastighet"
+      },
+      "titleFormatted": {
+        "en": "Turn on constant speed at [[rpm]] rpm",
+        "sv": "Slå på konstant hastighet på [[rpm]] varv/min"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "rpm",
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "placeholder": {
+            "en": "1000",
+            "sv": "1000"
+          }
+        }
+      ]
+    },
+    {
+      "id": "constant_speed_off",
+      "title": {
+        "en": "Turn off constant speed",
+        "sv": "Stäng av konstant hastighet"
+      }
+    },
+    {
+      "id": "pause_start",
+      "title": {
+        "en": "Pause the fan",
+        "sv": "Pausa fläkten"
+      },
+      "titleFormatted": {
+        "en": "Pause the fan for [[minutes]] minutes",
+        "sv": "Pausa fläkten i [[minutes]] minuter"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "minutes",
+          "min": 1,
+          "max": 255,
+          "placeholder": {
+            "en": "30",
+            "sv": "30"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pause_stop",
+      "title": {
+        "en": "End pause",
+        "sv": "Avsluta paus"
+      }
+    },
+    {
+      "id": "set_humidity",
+      "title": {
+        "en": "Set humidity mode",
+        "sv": "Ställ in fuktläge"
+      },
+      "titleFormatted": {
+        "en": "Set humidity sensitivity to [[detection]] at [[rpm]] rpm",
+        "sv": "Sätt fuktkänslighet till [[detection]] med [[rpm]] varv/min"
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "detection",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "sv": "Av"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Low",
+                "sv": "Låg"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Medium",
+                "sv": "Medel"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "High",
+                "sv": "Hög"
+              }
+            }
+          ]
+        },
+        {
+          "type": "number",
+          "name": "rpm",
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "placeholder": {
+            "en": "1800",
+            "sv": "1800"
+          }
+        }
+      ]
+    }
+  ]
+}

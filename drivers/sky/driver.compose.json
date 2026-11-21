@@ -1,0 +1,444 @@
+{
+  "name": {
+    "en": "Intellivent Sky / ICE",
+    "sv": "Intellivent Sky / ICE"
+  },
+  "class": "fan",
+  "capabilities": [
+    "fresh_boost",
+    "fresh_constant_speed",
+    "fresh_mode",
+    "fresh_rpm",
+    "measure_temperature",
+    "measure_humidity",
+    "fresh_boost_remaining"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "ble"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "options": {
+        "singular": true
+      },
+      "navigation": {
+        "next": "auth"
+      }
+    },
+    {
+      "id": "auth",
+      "navigation": {
+        "prev": "list_devices"
+      }
+    }
+  ],
+  "repair": [
+    {
+      "id": "repair_auth"
+    }
+  ],
+  "settings": [
+    {
+      "type": "group",
+      "label": {
+        "en": "Connection",
+        "sv": "Anslutning"
+      },
+      "children": [
+        {
+          "id": "auth_key",
+          "type": "text",
+          "label": {
+            "en": "Authentication code",
+            "sv": "Autentiseringskod"
+          },
+          "value": "",
+          "hint": {
+            "en": "8 hex characters. Without it the app is read-only. Use 'Repair' to fetch it from the fan in pairing mode.",
+            "sv": "8 hextecken. Utan kod är appen bara läsande. Använd 'Reparera' för att hämta den från fläkten i parkopplingsläge."
+          }
+        },
+        {
+          "id": "poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Poll interval",
+            "sv": "Uppdateringsintervall"
+          },
+          "value": 120,
+          "min": 30,
+          "max": 3600,
+          "units": {
+            "en": "s",
+            "sv": "s"
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Boost",
+        "sv": "Boost"
+      },
+      "children": [
+        {
+          "id": "boost_rpm",
+          "type": "number",
+          "label": {
+            "en": "Boost speed",
+            "sv": "Boosthastighet"
+          },
+          "value": 2400,
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "units": {
+            "en": "rpm",
+            "sv": "varv/min"
+          }
+        },
+        {
+          "id": "boost_seconds",
+          "type": "number",
+          "label": {
+            "en": "Boost duration",
+            "sv": "Boostlängd"
+          },
+          "value": 600,
+          "min": 60,
+          "max": 3600,
+          "units": {
+            "en": "s",
+            "sv": "s"
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Constant speed",
+        "sv": "Konstant hastighet"
+      },
+      "children": [
+        {
+          "id": "constant_speed_rpm",
+          "type": "number",
+          "label": {
+            "en": "Speed",
+            "sv": "Hastighet"
+          },
+          "value": 1000,
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "units": {
+            "en": "rpm",
+            "sv": "varv/min"
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Humidity",
+        "sv": "Fukt"
+      },
+      "children": [
+        {
+          "id": "humidity_enabled",
+          "type": "checkbox",
+          "label": {
+            "en": "Enabled",
+            "sv": "Aktiverad"
+          },
+          "value": true
+        },
+        {
+          "id": "humidity_detection",
+          "type": "dropdown",
+          "label": {
+            "en": "Sensitivity",
+            "sv": "Känslighet"
+          },
+          "value": "2",
+          "values": [
+            {
+              "id": "1",
+              "label": {
+                "en": "Low",
+                "sv": "Låg"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Medium",
+                "sv": "Medel"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "High",
+                "sv": "Hög"
+              }
+            }
+          ]
+        },
+        {
+          "id": "humidity_rpm",
+          "type": "number",
+          "label": {
+            "en": "Speed (humidity & VOC)",
+            "sv": "Hastighet (fukt & VOC)"
+          },
+          "value": 1800,
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "units": {
+            "en": "rpm",
+            "sv": "varv/min"
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Light & VOC",
+        "sv": "Ljus & VOC"
+      },
+      "children": [
+        {
+          "id": "light_enabled",
+          "type": "checkbox",
+          "label": {
+            "en": "Light detection enabled",
+            "sv": "Ljusdetektering aktiverad"
+          },
+          "value": true
+        },
+        {
+          "id": "light_detection",
+          "type": "dropdown",
+          "label": {
+            "en": "Light sensitivity",
+            "sv": "Ljuskänslighet"
+          },
+          "value": "2",
+          "values": [
+            {
+              "id": "2",
+              "label": {
+                "en": "Medium",
+                "sv": "Medel"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "High",
+                "sv": "Hög"
+              }
+            }
+          ]
+        },
+        {
+          "id": "voc_enabled",
+          "type": "checkbox",
+          "label": {
+            "en": "VOC detection enabled",
+            "sv": "VOC-detektering aktiverad"
+          },
+          "value": false
+        },
+        {
+          "id": "voc_detection",
+          "type": "dropdown",
+          "label": {
+            "en": "VOC sensitivity",
+            "sv": "VOC-känslighet"
+          },
+          "value": "2",
+          "values": [
+            {
+              "id": "1",
+              "label": {
+                "en": "High",
+                "sv": "Hög"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Medium",
+                "sv": "Medel"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Low",
+                "sv": "Låg"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Airing",
+        "sv": "Vädring"
+      },
+      "children": [
+        {
+          "id": "airing_enabled",
+          "type": "checkbox",
+          "label": {
+            "en": "Enabled",
+            "sv": "Aktiverad"
+          },
+          "value": false
+        },
+        {
+          "id": "airing_minutes",
+          "type": "number",
+          "label": {
+            "en": "Duration",
+            "sv": "Längd"
+          },
+          "value": 30,
+          "min": 5,
+          "max": 120,
+          "units": {
+            "en": "min",
+            "sv": "min"
+          }
+        },
+        {
+          "id": "airing_rpm",
+          "type": "number",
+          "label": {
+            "en": "Speed",
+            "sv": "Hastighet"
+          },
+          "value": 1200,
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "units": {
+            "en": "rpm",
+            "sv": "varv/min"
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Light timer",
+        "sv": "Ljustimer"
+      },
+      "children": [
+        {
+          "id": "timer_minutes",
+          "type": "number",
+          "label": {
+            "en": "Run time",
+            "sv": "Gångtid"
+          },
+          "value": 10,
+          "min": 1,
+          "max": 60,
+          "units": {
+            "en": "min",
+            "sv": "min"
+          }
+        },
+        {
+          "id": "timer_delay_enabled",
+          "type": "checkbox",
+          "label": {
+            "en": "Delayed start",
+            "sv": "Fördröjd start"
+          },
+          "value": false
+        },
+        {
+          "id": "timer_delay_minutes",
+          "type": "number",
+          "label": {
+            "en": "Delay",
+            "sv": "Fördröjning"
+          },
+          "value": 2,
+          "min": 0,
+          "max": 10,
+          "units": {
+            "en": "min",
+            "sv": "min"
+          }
+        },
+        {
+          "id": "timer_rpm",
+          "type": "number",
+          "label": {
+            "en": "Speed",
+            "sv": "Hastighet"
+          },
+          "value": 1800,
+          "min": 800,
+          "max": 2400,
+          "step": 10,
+          "units": {
+            "en": "rpm",
+            "sv": "varv/min"
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Information",
+        "sv": "Information"
+      },
+      "children": [
+        {
+          "id": "info_manufacturer",
+          "type": "label",
+          "label": {
+            "en": "Manufacturer",
+            "sv": "Tillverkare"
+          },
+          "value": "-"
+        },
+        {
+          "id": "info_firmware",
+          "type": "label",
+          "label": {
+            "en": "Firmware",
+            "sv": "Firmware"
+          },
+          "value": "-"
+        }
+      ]
+    }
+  ]
+}

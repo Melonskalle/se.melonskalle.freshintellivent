@@ -1,0 +1,35 @@
+{
+  "pair": {
+    "no_device": "No fan selected. Go back and pick a fan.",
+    "auth": {
+      "title": "Authentication code",
+      "intro": "To control the fan, Homey needs its 4-byte authentication code. Without it the fan can only be read.",
+      "step1": "Press the power button on the fan, then hold the Bluetooth/WiFi button for 8 seconds until the fan enters pairing mode.",
+      "step2": "Tap 'Fetch code from fan' within a minute, or type a code you already have (8 hex characters).",
+      "fetch": "Fetch code from fan",
+      "fetching": "Connecting to the fan…",
+      "fetched": "Code fetched!",
+      "need_code": "Enter or fetch a code first.",
+      "add": "Add with code",
+      "skip": "Add without code (read-only)",
+      "save": "Save"
+    }
+  },
+  "errors": {
+    "no_auth": "An authentication code is required to control the fan. Add it in the device settings or run Repair.",
+    "auth_failed": "The fan rejected the authentication code. Run Repair to fetch a new one.",
+    "read_only": "Read-only: no authentication code set.",
+    "no_state": "No data from the fan yet."
+  },
+  "modes": {
+    "off": "Off",
+    "pause": "Pause",
+    "constant_speed": "Constant speed",
+    "light": "Light",
+    "timer": "Timer",
+    "humidity": "Humidity",
+    "voc": "VOC",
+    "boost": "Boost",
+    "unknown": "Unknown"
+  }
+}
